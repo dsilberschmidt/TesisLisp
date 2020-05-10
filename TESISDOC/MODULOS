@@ -1,0 +1,139 @@
+
+
+
+
+                    Mecanismo de Unificaci¢n
+
+
+
+
+     Unificar dos literales consiste en encontrar una sustituci¢n,
+
+tal  que  aplicada  a  cada uno  de  los  literales  se  obtengan
+
+literales  id‚nticos.  Nuestra funci¢n unificar encuentra de  ser
+
+posible el unificador mas general y sino devuelve fracaso.
+
+
+
+
+
+
+
+
+                        Resolver Completo
+
+
+
+
+     Resolver-completo recibe dos nodos distintos llamados padres
+
+y  devuelve una lista de nodos llamados resolventes.  Esta  lista
+
+contiene  todas  las resolventes posibles que se  pueden  obtener
+
+dado dos nodos. Recordemos que dos cl usulas resuelven si existen
+
+dos literales unificables, proveniente cada uno de cada cl usula,
+
+uno negado y otro afirmado. La resolvente es el resultado de unir
+
+los literales de cada cl usula,  eliminando los dos literales que
+
+unificaron  y aplicando la sustituci¢n que gener¢ la  unificaci¢n
+
+al resto de los literales.
+
+     Las resolventes reciben como lista de posibles respuestas la
+
+uni¢n de las listas de posibles respuestas de los padres.
+
+.pa
+
+
+                      Eliminar Tautolog¡as
+
+
+
+     Eliminar-tautolog¡as  es una funci¢n de nuestro sistema  que
+
+dada  una  lista  de  nodos,  devuelve otra lista en  la  que  se
+
+excluyen  las tautolog¡as de la lista inicial.  Cabe aclarar  que
+
+una  cl usula  es  una tautolog¡a si tiene al  menos  un  literal
+
+afirmado  y negado a la vez.  Este tipo de cl usulas son  siempre
+
+verdaderas  y  elimin ndolas no se altera la  compatibilidad  del
+
+sistema.
+
+
+
+                       Fusionar Cl usulas
+
+
+
+     Fusionar-cl usulas  recibe  una lista de nodos que  devuelve
+
+reemplazando  las  cl usulas fusionables por  la  correspondiente
+
+cl usula compactada. Si esto ocurre se reemplaza en el nodo, tipo
+
+'cl usula'  por  tipo  'fusi¢n',  dado  que  hay  estategias  que
+
+discriminan  entre  las  cl usulas  comunes  y  las  que   fueron
+
+fusionadas.  Recordemos  que una cl usula es fusionable si existe
+
+una  sustituci¢n  tal que aplicada a la cl usula deja uno  o  m s
+
+literales  iguales.  Cuando esto ocurre se aplica la  sustituci¢n
+
+m¡nima y se eliminan los literales repetidos.
+
+     El  uso de fusi¢n hace que la cl usula  pierda  informaci¢n.
+
+Sin  embargo,  si  no se fusionan las cl usulas iniciales  no  se
+
+altera la compatibilidad del sistema (no demostrado). Normalmente,
+
+el uso de fusi¢n reduce el area de busqueda.
+
+.pa
+
+
+
+
+               Eliminar y Auto Depurar Subsumidas
+
+
+
+     Eliminar-subsumidas recibe dos listas de nodos y devuelve la
+
+primer lista,  sacando de ella todos los nodos que son subsumidos
+
+por algun nodo de la segunda lista.
+
+     Auto-depurar-subsumidas   recibe  una  lista  de  nodos  que
+
+devuelve  eliminando  de esta los nodos que  son  subsumidos  por
+
+otros  de esa misma lista y tomando en cuenta que si dos nodos se
+
+subsumen mutuamente (son iguales) solo se elimina uno solo.
+
+     Una cl usula subsume a otra,  si existe una sustituci¢n  tal
+
+que  aplicada a la primera esta quede incluida en la segunda.  Si
+
+esto ocurre, la segunda cl usula puede ser eliminada, sin alterar
+
+la compatibilidad del sistema.  Bajo esta definici¢n,  la primera
+
+cl usula  es  mas  general que la segunda y  en  consecuencia  la
+
+segunda cl usula no aporta conocimiento al sistema.
+

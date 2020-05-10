@@ -1,0 +1,212 @@
+
+
+         Mecanismos de inferencia y sistema de b즧queda
+         컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+
+     En  un  sistema  refutador el orden en que  se  escogen  las
+
+cl쟵sulas a ser resueltas determinan el mecanismo de  inferencia.
+
+Se  intent�  en  este  sistema que esta  componente  sea  lo  m쟳
+
+vers쟴il posible.
+
+     Los  nodos  estan organizados en dos  listas:  expandidas  y
+
+expandibles.  En  expandidas estan todos los nodos que ya  fueron
+
+resueltos alguna vez. Los restantes nodos estan en expandibles.
+
+     Expandir  un  nodo perteneciente a expandibles  consiste  en
+
+resolver ese nodo contra cada uno de los nodos de expandidas.
+
+     El funcionamiento del sistema se puede sintetizar en:
+
+
+
+     Mientras haya expandibles y operador quira seguir
+
+              Si  primer nodo tiene profundidad OK
+
+                  Expandir primer nodo de expandibles
+
+                  Si  hay cl쟵sula vac죂
+
+                      Mostrar respuesta
+
+                  Filtrar resolventes
+
+                  Colocar segun heur죛tica primaria resolventes
+
+                     en expandibles
+
+              Colocar segun heur죛tica secundaria primer nodo de
+
+                 expandibles en expandidas
+
+
+
+     Los  nodos  ingresan  y se van ordenando  en  expandidas  de
+
+acuerdo  a la heur죛tica secundaria y en expandibles de acuerdo a
+
+la heur죛tica primaria.
+
+.pa
+
+     Lo que nosotros llamamos heur죛tica tiene tres componentes:
+
+
+
+     Admisibilidad:
+
+          Esta   es   una  funci줻 booleana que permite o  no  el
+
+     ingreso de un nodo a la lista.  Para la heur죛tica  primaria
+
+     solo  esta  implementada una admisibilidad sin  restricci줻,
+
+     mientras que para la heur죛tica secundaria existen ademas la
+
+     restricci줻  fusi줻 (solo admite nodos tipo 'fusi줻')  y  la
+
+     restricci줻  entrada-lineal  (solo admite el  conjunto  base
+
+     inicial).  En el futuro se van a implementar admisibilidades
+
+     que   restrinjan  por  la  longitud  de  las   cl쟵sulas   y
+
+     complejidad de las respuestas.
+
+
+
+     Funci줻-h:
+
+          Es la cl쟳ica funci줻 heur죛tica.  Es un estimaci줻 del
+
+     costo   de   la  distancia  que  media  entre  la   cl쟵sula
+
+     considerada  y  la cl쟵sula vac죂 o final  de  la  b즧queda.
+
+     Estan  implementadas las funciones-h preferencia de unidades
+
+     y  preferencia  de  menores,  ademas  de  de  una  funcion-h
+
+     constante.
+
+
+
+     Prioridad:
+
+          Puede  ser vertical u horizontal.  Resuelve  colisiones
+
+     entre   cl쟵sulas   con   igual   funci줻-h.   Vertical   da
+
+     preferencia, dentro de los nodos con igual funcion-h, al mas
+
+     reciente.  Horizontal al mas antiguo.  En el futuro se van a
+
+     implementar prioridades random.
+
+.pa
+
+     Es muy f쟠il programar funciones-h. Tenemos muchos proyectos
+
+al respecto.
+
+     Esta  previsto que un nodo se expanda s줹o contra  ancestros
+
+suyos  o  nodos  del conjunto base.  Esta  es  la  estrategia  de
+
+filtrado de ancestros.
+
+     Resumiendo, el mecanismo de inferencia queda determinado por
+
+la siguiente lista de par쟭etros:
+
+
+     llamada  :=  [ soporte | ancho ]
+
+     admisibilidad-1 := [ sin-restricci줻 ]
+
+     funci줻-h-1  :=  [ constante | menores | unidades ]
+
+     prioridad-1  :=  [ vertical | horizontal ]
+
+     admisibilidad-2 := [ sin-restricci줻 | entrada-lineal
+
+                          | restriccin-fusi줻 ]
+
+     funci줻-h-2  :=  [ constante | menores | unidades ]
+
+     prioridad-2  :=  [ vertical | horizontal ]
+
+     limite-profundidad :=  [ <n즡ero> | nil ]
+
+     flag-filtrado-ancestros := [ true | nil ]
+
+     flag-control-tautolog죂 := [ true | nil ]
+
+     flag-control-fusi줻     := [ true | nil ]
+
+     flag-control-subsunci줻 := [ true | nil ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

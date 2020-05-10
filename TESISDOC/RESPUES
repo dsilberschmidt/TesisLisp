@@ -1,0 +1,58 @@
+
+
+
+              Mecanismo de extracci¢n de respuesta
+
+
+
+     Las cl usulas del conjunto soporte (goal + sucesores) tienen
+
+su  tercer  elemento (lista de respuestas)  no  nulo.  El  tercer
+
+elemento del goal es una lista de una lista de sus variables.
+
+     En  cada resoluci¢n se unen las listas de respuestas de  los
+
+padres y se les aplica  el unificador.
+
+     Asi  cuando se llega a una cl usula vac¡a se tiene una lista
+
+de  listas  de  instanciaciones de las variables  originales  del
+
+goal. Esta es una disyunci¢n, vale decir que alguna de las listas
+
+de instanciaciones es correcta.
+
+     Implementamos  un proceso al que  llamamos  reciclaje.  Este
+
+consiste en intentar refutar el goal aplic ndole como sustituci¢n
+
+cada  uno  de los disyuntos.  De obtenerse al menos una  cl usula
+
+vac¡a  se devuelve una respuesta simple (no mas de un  disyunto).
+
+De otro modo se devuelve una respuesta disyuntiva multiple.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

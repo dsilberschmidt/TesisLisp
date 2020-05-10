@@ -1,0 +1,129 @@
+
+
+                       Propuesta de tesis
+
+
+
+Introducci¢n:
+
+
+     La  programaci¢n l¢gica surge tras el descubrimiento de  que
+
+en  un  algoritmo  existe una componente l¢gica  distinta  de  la
+
+componente de control.  En los lenguajes convencionales estas dos
+
+componentes  se confunden.  Los lenguajes de programaci¢n  l¢gica
+
+persiguen  el prop¢sito de explicitar solo la componente  l¢gica.
+
+El  mas  popular  de ellos es Prolog.  Es un  objetivo  altamente
+
+deseable que las dos componentes sean independientes,  vale decir
+
+que  un  programa  /  sistema  pueda  se  'ejecutado'  sin  mayor
+
+requerimiento que su especificaci¢n l¢gica. Entre los usos que se
+
+mencionan  de  Prolog  suele nombrarse el de  poder  usarse  como
+
+herramienta  de  prototipaci¢n  r pida.  Pero  al  investigar  la
+
+performance  de  Prolog  en este campo nos  encontramos  con  las
+
+siguientes falencias:
+
+
+
+     -  Oraciones simples como " si A entonces B o C " ¢ " no A "
+
+        no pueden se expresadas con una £nica cl usula Prolog.
+
+     -  Existen situaciones l¢gicas (conjunto de f¢rmulas l¢gicas)
+
+        resolubles  que Prolog no puede resolver debido a que  no
+
+        cuenta con un mecanismo de inferencia completo.
+
+     -  Existen  situaciones l¢gicas que Prolog  solamente  puede
+
+        resolver  si  se le presentan las cl usulas en  un  orden
+
+        determinado   por  la  estrategia  de  su  mecanismo   de
+
+        inferencia.  De  presentarse las mismas cl usulas en otro
+
+        orden Prolog no las resuelve.
+
+
+.pa
+
+
+     En    definitiva   no   se   puede   programar   en   Prolog
+
+independiz ndose  de  la  componente  de  control,  es  necesario
+
+conocer   su  mecanismo  de  inferencia.   A  partir   de   estas
+
+observaciones toma cuerpo nuestra propuesta.
+
+
+
+Objetivo:
+
+
+     Implementar  un lenguaje de programaci¢n l¢gica orientado  a
+
+se una herramienta de prototipaci¢n r pida.
+
+     A tales efectos es necesario:
+
+
+     -  Que  el  lenguaje  admita cualquier  aseveraci¢n  posible
+
+        expresada en f¢rmulas l¢gicas de primer orden.
+
+     -  Que  el  mecanismo de inferencia incorpore al  menos  una
+
+        estrategia de inferencia completa.
+
+
+
+     El sistema contar¡a ademas con las siguientes facilidades:
+
+
+     -  Selecci¢n de estrategias para el mecanismo de inferencia.
+
+     -  Modo de ejecuci¢n paso a paso.
+
+     -  Traductor  de  f¢rmulas  de  l¢gica  de  primer  orden  a
+
+        f¢rmulas en forma clausal.
+
+
+
+     Con  estas caracter¡sticas adicionales el sistema puede  ser
+
+utilizado como herramienta de soporte en un curso de Programaci¢n
+
+l¢gica.  Este  tema  se  ve  durante la  carrera  en  la  materia
+
+Inteligencia Artificial II.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

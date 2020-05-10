@@ -1,0 +1,67 @@
+
+
+                         Sintaxis de LGC
+
+
+
+     Base-de-conocimiento := { F¢rmula }
+
+
+     Goal  :=  F¢rmula
+
+
+     F¢rmula := [ Atomo | (F¢rmula and F¢rmula)
+
+                        | (F¢rmula or  F¢rmula)
+
+                        | (F¢rmula xor F¢rmula)
+
+                        | (F¢rmula  -> F¢rmula)
+
+                        | (F¢rmula <-> F¢rmula)
+
+                        | (not F¢rmula)
+
+                        | (paratodo Variables F¢rmula)
+
+                        | (existe   Variables F¢rmula)
+
+                ]
+
+
+     Variables := Lista-de-s¡mbolos
+
+
+     Atomo  :=  [ S¡mbolo | Lista-de-s¡mbolos ]
+
+
+     Lista-de-s¡mbolos := { S¡mbolo }
+
+
+     S¡mbolo   :=   s¡mbolo lisp representado por un conjunto  de
+
+                    caracteres ascii
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

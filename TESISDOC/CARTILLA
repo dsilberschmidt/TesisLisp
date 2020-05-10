@@ -1,0 +1,73 @@
+
+
+                           Cartilla LGC
+                           컴컴컴컴컴컴
+
+       Carga LGC
+
+1. Cargar DOS
+
+2. Cargar Sidekick con el comando
+
+    A:>skn   nl
+
+3. Cargar lisp con el comando
+
+    A:>lisp  nl
+
+4. Cargar LGC con el comando
+
+    >>>(load "lgc") nl
+
+       Subsistemas de LGC
+
+Compilador
+     Traduce  una  base-fuente formada por f줿mulas de l줳ica  de
+primer  orden  en una base-objeto formada por f줿mulas  en  forma
+clausal susceptibles de ser interpretadas por el interprete
+     Se lo llama con
+     >>> (compilar base-fuente [base-objeto])
+               o
+     >>> (c base-fuente [base-objeto])
+
+Interprete
+     Se lo llama con
+     >>> (interprete [base-objeto] [goal])
+               o
+     >>> (i [base-objeto] [goal])
+
+Comandos del interprete
+     exit
+     lisp
+     add formula
+     list
+     on flag
+     off flag
+
+Flags
+     flag-control-tautolog죂s
+     flag-control-fusi줻
+     flag-control-subsunci줻
+     flag-monitor
+     flag-interrupci줻
+     flag-reciclaje
+     flag-filtrado-ancestros
+
+Comandos interrupci줻
+     l   llamada a lisp
+     spc continua
+
+
+
+
+Comandos respuesta
+     l    llamada a lisp
+     s    mas respuestas
+     n    no mas respuestas
+     r    menu recorrida del arbol de ancestros de respuesta
+
+Men� recorrida
+     1    subir al padre1
+     2    subir al padre2
+     v    bajar al hijo
+     q    salir del men�
