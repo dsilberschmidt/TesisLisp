@@ -64,7 +64,7 @@
    )
 )
 
-(defun separar (implicacion &opt (positivos nil))
+(defun separar (implicacion &optional (positivos nil))
    (if (and (<> (first implicacion) '<-) implicacion)
        (separar (rest implicacion) (snoc (first implicacion) positivos))
        (list positivos (rest implicacion))
@@ -77,7 +77,7 @@
    )
 )
 
-(defun armar-clausula (clausula &opt (padre1 nil) (padre2 nil)
+(defun armar-clausula (clausula &optional (padre1 nil) (padre2 nil)
                                   (profundidad 0)
                              &aux (positivos (first clausula))
                                   (negativos (second clausula))
@@ -329,7 +329,7 @@
  ; (load "renombra")   necesita: renombrar
 
 (de resolver-diagonal (pos1 neg1 pos2 neg2 respuestas
-                       &opt (aux-pos1 nil) (aux-neg2 nil) &aux unif
+                       &optional (aux-pos1 nil) (aux-neg2 nil) &aux unif
                       )
   (if pos1
     (if neg2
@@ -587,7 +587,7 @@
    )
 )
 
-(de pp-clausula (clausula &opt (columna 0) &rest opcion)
+(de pp-clausula (clausula &optional (columna 0) &rest opcion)
    (prin2 (newstring columna \ ))
    (prin-elementos (list (sixth clausula) \:))
    (prin-elementos (first clausula))
@@ -642,7 +642,7 @@
    )
 )
 
-(de shell (char &opt (clausula nil))
+(de shell (char &optional (clausula nil))
    (cond
       ( (= char \l) (lisp))
       ( (and (= char \r) clausula) (recorrer-ancestros clausula))
@@ -755,7 +755,7 @@
   )
 )
 
-(de interactuar (&opt (clausula nil))
+(de interactuar (&optional (clausula nil))
    (do ((char (prin2 "Mas (s/n)?") (console-in)))
        (((= char \s) (print 'si)) ((= char \n) (print 'no)))
        (if (<> (shell char clausula) 'nada)
@@ -963,7 +963,7 @@
  ; interprete contiene: interprete, compilar, armar-clausulas, armar-goal
  ;                      add, i, c
 
-(de interprete (&opt (base-objeto objeto)
+(de interprete (&optional (base-objeto objeto)
                      (goal-fuente (progn (prin2 '?-) (read)))
                 &aux (base-interna (armar-clausulas base-objeto))
                      (goal-interno (armar-goal goal-fuente))
@@ -987,7 +987,7 @@
    )
 )
 
-(de compilar (base-fuente &opt (base-objeto 'objeto))
+(de compilar (base-fuente &optional (base-objeto 'objeto))
    (set base-objeto
         (implicar (clausal base-fuente))
    )
@@ -1213,7 +1213,7 @@
    )
 )
 
-(de cuantifout (formula &opt (param nil) &aux var sust)
+(de cuantifout (formula &optional (param nil) &aux var sust)
    (cond
       (  (atom formula) formula)
       (  (universal formula)
@@ -1275,7 +1275,7 @@
 
  ; uso de globales: primer-resolvente
 
-(de reciclar (variables solucion &opt (hubo-reciclaje nil)
+(de reciclar (variables solucion &optional (hubo-reciclaje nil)
                                  &aux (supuesto (first solucion))
              )
    (if solucion
