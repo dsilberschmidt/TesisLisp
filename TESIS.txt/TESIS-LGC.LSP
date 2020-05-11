@@ -917,23 +917,22 @@
    (defvar  flag-interrupcion t)
    (defvar  flag-reciclaje t)
 
-   (defvar llamada (eval ([soporte ancho] 1)))
+   (defvar llamada soporte)                 ; (eval ([soporte ancho] 1)))
 
-   (defvar admisibilidad-1 (eval ([sin-restriccion] 1)))
-   (defvar funcion-h-1 (eval ([constante menores unidades] 3)))
-   (defvar prioridad-1 (eval ([vertical horizontal] 2)))
+   (defvar admisibilidad-1 sin-restriccion) ; (eval ([sin-restriccion] 1)))
+   (defvar funcion-h-1 unidades)            ; (eval ([constante menores unidades] 3)))
+   (defvar prioridad-1 horizontal)          ; (eval ([vertical horizontal] 2)))
 
-   (defvar admisibilidad-2
-         (eval ([sin-restriccion entrada-lineal restriccion-fusion] 1))
+   (defvar admisibilidad-2 sin-restriccion) ; (eval ([sin-restriccion entrada-lineal restriccion-fusion] 1))
    )
-   (defvar funcion-h-2 (eval ([constante menores unidades] 1)))
-   (defvar prioridad-2 (eval ([vertical horizontal] 2)))
+   (defvar funcion-h-2 constante)           ; (eval ([constante menores unidades] 1)))
+   (defvar prioridad-2 horizontal)          ; (eval ([vertical horizontal] 2)))
 
    (seth)
 
    (defvar limite-profundidad nil)
 
-   (off   flag-filtrado-ancestros)
+   (defvar flag-filtrado-ancestros nil)
 )
 
 (defun seth ()
