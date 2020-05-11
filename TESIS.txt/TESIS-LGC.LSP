@@ -697,7 +697,7 @@
             (ancestro clausula1 (fifth clausula2))
         )
    )
-)
+
 
  ; tipos de funcion-h
 
