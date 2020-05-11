@@ -233,7 +233,7 @@
   )
 )
 
-(print 'unificar-ok)
+(print 'unificar-ok)
  ; renombrar contiene:  renombrar, gensym, extraer-raiz, hallar-variables,
  ;                      hallar-raices, normalizar, inicializar-gensym,
  ;                      renombrar-anonimas, sacar-anonimas
@@ -319,7 +319,7 @@
 
 (print 'renombrar-ok)
 
-
+
  ; resolver contiene:  resolver-diagonal, resolver-completo, nueva-prof
 
  ; (load "unificar")   necesita: unificar, aplicar
@@ -378,7 +378,7 @@
    (add1 (max (sixth clausula1) (sixth clausula2)))
 )
 
-(print 'resolver-ok)
+(print 'resolver-ok)
  ; tautologia contiene: tautologiap, eliminar-tautologias
 
  ; (load "uti")         necesita: interseccion
@@ -400,7 +400,7 @@
 )
 
 (print 'tautologia-ok)
-
+
  ; fusion contiene:   fusiona-literal, fusionar, fusionar-clausulas
 
  ; (load "unificar")  necesita: unificar, aplicar
@@ -462,7 +462,7 @@
 )
 
 (print 'fusion-ok)
-
+
  ; subsume contiene:   subsume-literal, subsume-literales, unificar=>
  ;                     subsume, subsumida, eliminar-subsumidas
  ;                     auto-depurar-subsumidas
@@ -561,7 +561,7 @@
 )
 
 (print 'subsume-ok)
-
+
  ; monitor contiene: monitor, prin-elementos, pp-clausula, pp-clausulas,
  ;                   recorrer-ancestros, interrupcion, shell
 
@@ -651,7 +651,7 @@
 )
 
 (print 'monitor-ok)
-
+
  ; estrategia contiene: ancho, soporte, sin-restriccion, entrada-lineal,
  ;                      restriccion-fusion, tope-profundidad, ancestro,
  ;                      constante, menores, unidades, horizontal, vertical
@@ -719,7 +719,7 @@
 
 (setq vertical <=)
 
-(print 'estrategia-ok)
+(print 'estrategia-ok)
  ; respuesta contiene: eliminar-respuestas-y-mostrarlas, clausula-no-nula,
  ;                     interactuar, mostrar-solucion, pp-solucion
 
@@ -787,7 +787,7 @@
    (or (first clausula) (second clausula))
 )
 
-(print 'respuesta-ok)
+(print 'respuesta-ok)
  ; busqueda contiene: busqueda, obtener-expandidas, obtener-expandibles,
  ;                    colocar, ordenar, expandir, generar-resolventes,
  ;                    admisibles
@@ -902,7 +902,7 @@
    )
 )
 
-(print 'busqueda-ok)
+(print 'busqueda-ok)
 
  ; inicial contiene: inicializacion, seth, on, on
 
@@ -959,7 +959,7 @@
 
 (inicializacion)
 
-(print 'inicial-ok)
+(print 'inicial-ok)
  ; interprete contiene: interprete, compilar, armar-clausulas, armar-goal
  ;                      add, i, c
 
@@ -1032,7 +1032,7 @@
 (setq i interprete c compilar)
 
 (print 'interprete-ok)
-
+
  ; uticla contiene: skolemizar, variabilizar, chequear-variable,
  ;                  sustituir, conjuncion, disyuncion, negacion,
  ;                  universal, existencial, largo, vtol, ltov, ltov1
@@ -1131,7 +1131,7 @@
 )
 
 (print 'uticla-ok)
-
+
  ; clausal contiene:   clausal, clausal1, implout, negin, negar, cuantifout,
  ;                     distribuir, conjout, disyout
 
@@ -1269,7 +1269,7 @@
    )
 )
 
-(print 'clausal-ok)
+(print 'clausal-ok)
 
  ; reciclar  contiene: reciclar, goal-instanciado, incluido
 
@@ -1332,7 +1332,7 @@
 )
 
 (print 'reciclar-ok)
-
+
  ; evaluar contiene:  evaluar, generar-resolventes-bis, pertenece-vacia,
  ;                    pertenece-vacia-bis
 
@@ -1388,4 +1388,4 @@
    (and clausulas (null (first clausula)) (null (second clausula))))
 )
 
-(print 'evaluar-ok)
+(print 'evaluar-ok)
