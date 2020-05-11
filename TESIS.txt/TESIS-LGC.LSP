@@ -35,12 +35,12 @@
 (defun sub1 (numero)
   (- numero 1)
 )
-
+(defun add1 (numero) (+ numero 1))
 (defun last_n (lista)
    (first (reverse lista))
 )
 
-(defun posicion (elemento lista &opt (lugar 1))
+(defun posicion (elemento lista &optional (lugar 1))
    (if lista
       (if (= (first lista) elemento)
           lugar
