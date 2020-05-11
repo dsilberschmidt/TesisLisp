@@ -715,9 +715,9 @@
 )
  ; tipos de prioridad
 
-(setq horizontal <)
+(defvar horizontal <)     ;originalmente setq
 
-(setq vertical <=)
+(defvar vertical :<=)      ;originalmente setq y <=
 
 (print 'estrategia-ok)
  ; respuesta contiene: eliminar-respuestas-y-mostrarlas, clausula-no-nula,
@@ -945,13 +945,13 @@
    )
 )
 
-(df on (flags)
+(defun on (flags)                       ;originalmente df
    (mapc (lambda (flag) (set flag t))
          flags
    )
 )
 
-(df off (flags)
+(defun off (flags)                      ;originalmente df
    (mapc (lambda (flag) (set flag nil))
          flags
    )
