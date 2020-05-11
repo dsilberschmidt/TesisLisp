@@ -234,8 +234,8 @@
 )
 
 (print 'unificar-ok)
- ; renombrar contiene:  renombrar, gensym, extraer-raiz, hallar-variables,
- ;                      hallar-raices, normalizar, inicializar-gensym,
+ ; renombrar contiene:  renombrar, gensym_n, extraer-raiz, hallar-variables,
+ ;                      hallar-raices, normalizar, inicializar-gensym_n,
  ;                      renombrar-anonimas, sacar-anonimas
 
  ; (load "unificar")   necesita: variablep, aplicar
@@ -245,10 +245,10 @@
  ; (load "uticla")     necesita: renombrar-anonima
 
 (defun renombrar (expresion &aux (variables (hallar-variables expresion)))
-   (aplicar (map-2-ar list variables (mapcar gensym variables)) expresion)
+   (aplicar (map-2-ar list variables (mapcar gensym_n variables)) expresion)
 )
 
-(defun gensym (simbolo &aux (raiz (extraer-raiz simbolo)) posicion)
+(defun gensym_n (simbolo &aux (raiz (extraer-raiz simbolo)) posicion)
    (if (setq posicion (memvec raiz vector-raices))
        (insert (string raiz \_ ( (store vector-numeros
                                         posicion
@@ -293,14 +293,14 @@
    (mapcar renombrar (renombrar-anonima clausulas))
 )
 
-(defun inicializar-gensym ()
+(defun inicializar-gensym_n ()
    (setq vector-raices [])
    (setq vector-numeros [])
 )
 
 (defun renombrar-anonima (expr)
    (cond
-      ((= expr '?) (gensym '?))
+      ((= expr '?) (gensym_n '?))
       ((atom expr) expr)
       (t (cons (renombrar-anonima (first expr))
                (renombrar-anonima (rest expr))
@@ -473,7 +473,7 @@
 
 (defun unificar=> (literal1 literal2
                 &aux unif (variables (hallar-variables literal2))
-                     (constantes (mapcar (lambda (x) (gensym 'k)) variables))
+                     (constantes (mapcar (lambda (x) (gensym_n 'k)) variables))
                      (unif1 (map-2-ar list variables constantes))
                      (unif2 (map-2-ar list constantes variables))
                )
@@ -510,7 +510,7 @@
 
 (defun subsume (clausula1 clausula2
              &aux unif (variables (hallar-variables clausula2))
-                  (constantes (mapcar (lambda (x) (gensym 'k)) variables))
+                  (constantes (mapcar (lambda (x) (gensym_n 'k)) variables))
                   (unif-k (map-2-ar list variables constantes))
                   (clausula-k (aplicar unif-k clausula2))
             )
@@ -907,7 +907,7 @@
  ; inicial contiene: inicializacion, seth, on, on
 
 (defun inicializacion ()
-   (inicializar-gensym)
+   (inicializar-gensym_n)
    (setq nro-clausulas 0)
 
    (on  flag-control-tautologia)
@@ -1039,16 +1039,16 @@
 
  ; (load "unificar")   necesita: valor, variablep
 
- ; (load "renombrar")  necesita: gensym
+ ; (load "renombrar")  necesita: gensym_n
 
 (defun skolemizar (existenciales universales)
-   (mapcar (lambda (x) (list x (cons (gensym 'sk) universales)))
+   (mapcar (lambda (x) (list x (cons (gensym_n 'sk) universales)))
            existenciales
    )
 )
 
 (defun variabilizar (universales)
-   (mapcar (lambda (x) (gensym (chequear-variable x)))
+   (mapcar (lambda (x) (gensym_n (chequear-variable x)))
            universales
    )
 )
