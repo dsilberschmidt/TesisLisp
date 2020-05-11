@@ -25,7 +25,7 @@
  ;;; uti contiene: cabeza, last_n, posicion, rotar, snoc, reemplazar,
  ;               separar, implicar, armar-clausula, numerar,
  ;               map-2-ar, union_n, interseccion, compactar,
- ;               compactar-orden, lisp, quit
+ ;               compactar-orden, lisp, quit_n
 
 (defun cabeza (lista numero)
    (if (and (> numero 0) lista)
@@ -143,7 +143,7 @@
    )
 )
 
-(defun quit () 'quit)
+(defun quit_n () 'quit)
 
 (print 'uti-ok)
 
@@ -972,7 +972,7 @@
                )
    (selectq goal-fuente
        ( 'exit   nil)
-       ( 'lisp   (print2 "Use (quit) para retornar al sistema.")
+       ( 'lisp   (print2 "Use (quit_n) para retornar al sistema.")
                  (lisp)  (interprete base-objeto)
        )
        ( 'add    (interprete (add base-objeto (read))))
