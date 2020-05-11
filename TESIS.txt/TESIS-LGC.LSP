@@ -294,8 +294,8 @@
 )
 
 (defun inicializar-gensym_n ()
-   (setq vector-raices [])
-   (setq vector-numeros [])
+   (defvar vector-raices nil)     ;originalmente [] en lugar de nil
+   (defvar vector-numeros nil)    ;originalmente [] en lugar de nil
 )
 
 (defun renombrar-anonima (expr)
@@ -910,12 +910,12 @@
    (inicializar-gensym_n)
    (defvar nro-clausulas 0)
 
-   (on  flag-control-tautologia)
-   (on  flag-control-fusion)
-   (on  flag-control-subsuncion)
-   (on  flag-monitor)
-   (on  flag-interrupcion)
-   (on  flag-reciclaje)
+   (defvar  flag-control-tautologia t)
+   (defvar  flag-control-fusion t)
+   (defvar  flag-control-subsuncion t)
+   (defvar  flag-monitor t)
+   (defvar  flag-interrupcion t)
+   (defvar  flag-reciclaje t)
 
    (defvar llamada (eval ([soporte ancho] 1)))
 
