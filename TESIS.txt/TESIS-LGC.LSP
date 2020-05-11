@@ -145,12 +145,12 @@
 
 (defun quit_n () 'quit)
 
-(print 'uti-ok)
+(print 'uti-ok)
 
  ; unificar contiene: aplicar, valor, variablep, componer, aplicar-term,
  ;                    pares-nuevos, ocurre, unificar
 
-(de aplicar (sust expr)
+(defun aplicar (sust expr)
    (cond
       ((variablep expr) (valor sust expr))
       ((atom expr) expr)
@@ -161,7 +161,7 @@
    )
 )
 
-(de valor (sust var)
+(defun valor (sust var)
    (cond
       ((null sust) var)
       ((= (first (first sust)) var) (second (first sust)))
@@ -169,19 +169,19 @@
    )
 )
 
-(de variablep (expr)
+(defun variablep (expr)
    (and (symbolp expr)
         (= (nth (pname expr) 1) \?)
    )
 )
 
-(de componer (sust1 sust2)
+(defun componer (sust1 sust2)
    (append (aplicar-term sust1 sust2)
            (pares-nuevos sust1 (mapcar first sust2))
    )
 )
 
-(de aplicar-term (sust1 sust2)
+(defun aplicar-term (sust1 sust2)
    (if sust2
        (cons (list (first (first sust2))
                    (aplicar sust1 (second (first sust2)))
@@ -191,7 +191,7 @@
    )
 )
 
-(de pares-nuevos (sust lista)
+(defun pares-nuevos (sust lista)
   (cond
     ((null sust) nil)
     ((pertenece (first (first sust)) lista) (pares-nuevos (rest sust) lista))
@@ -199,7 +199,7 @@
   )
 )
 
-(de ocurre (var expr)
+(defun ocurre (var expr)
    (if (atom expr)
        (= var expr)
        (or (ocurre var (first expr))
@@ -208,7 +208,7 @@
    )
 )
 
-(de unificar (literal1 literal2 &aux unif1 unif2)
+(defun unificar (literal1 literal2 &aux unif1 unif2)
   (cond
      ( (= literal1 literal2) nil)
      ( (and (variablep literal1) (not (ocurre literal1 literal2)))
@@ -244,11 +244,11 @@
 
  ; (load "uticla")     necesita: renombrar-anonima
 
-(de renombrar (expresion &aux (variables (hallar-variables expresion)))
+(defun renombrar (expresion &aux (variables (hallar-variables expresion)))
    (aplicar (map-2-ar list variables (mapcar gensym variables)) expresion)
 )
 
-(de gensym (simbolo &aux (raiz (extraer-raiz simbolo)) posicion)
+(defun gensym (simbolo &aux (raiz (extraer-raiz simbolo)) posicion)
    (if (setq posicion (memvec raiz vector-raices))
        (insert (string raiz \_ ( (store vector-numeros
                                         posicion
@@ -264,7 +264,7 @@
     )
 )
 
-(de extraer-raiz (simbolo &aux (hilera (pname simbolo))
+(defun extraer-raiz (simbolo &aux (hilera (pname simbolo))
                                (posicion (string-search hilera \_))
                  )
    (insert (if posicion
@@ -274,7 +274,7 @@
    )
 )
 
-(de hallar-variables (expresion)
+(defun hallar-variables (expresion)
    (if (variablep expresion)
        (list expresion)
        (if (listp expresion)
@@ -285,20 +285,20 @@
    )
 )
 
-(de hallar-raices (expresion)
+(defun hallar-raices (expresion)
    (mapcar extraer-raiz (hallar-variables expresion))
 )
 
-(de normalizar (clausulas)
+(defun normalizar (clausulas)
    (mapcar renombrar (renombrar-anonima clausulas))
 )
 
-(de inicializar-gensym ()
+(defun inicializar-gensym ()
    (setq vector-raices [])
    (setq vector-numeros [])
 )
 
-(de renombrar-anonima (expr)
+(defun renombrar-anonima (expr)
    (cond
       ((= expr '?) (gensym '?))
       ((atom expr) expr)
@@ -309,7 +309,7 @@
    )
 )
 
-(de sacar-anonimas (lista)
+(defun sacar-anonimas (lista)
    (cond
       ( (null lista) nil )
       ( (= (extraer-raiz (first lista)) '?) (sacar-anonimas (rest lista)) )
@@ -328,7 +328,7 @@
 
  ; (load "renombra")   necesita: renombrar
 
-(de resolver-diagonal (pos1 neg1 pos2 neg2 respuestas
+(defun resolver-diagonal (pos1 neg1 pos2 neg2 respuestas
                        &optional (aux-pos1 nil) (aux-neg2 nil) &aux unif
                       )
   (if pos1
@@ -356,7 +356,7 @@
   )
 )
 
-(de resolver-completo (clausula1 clausula2
+(defun resolver-completo (clausula1 clausula2
                        &aux (profundidad (nueva-prof clausula1 clausula2))
                       )
   (mapcar (lambda (x) (armar-clausula x clausula1 clausula2 profundidad))
@@ -374,7 +374,7 @@
   )
 )
 
-(de nueva-prof (clausula1 clausula2)
+(defun nueva-prof (clausula1 clausula2)
    (add1 (max (sixth clausula1) (sixth clausula2)))
 )
 
@@ -384,13 +384,13 @@
  ; (load "uti")         necesita: interseccion
 
 
-(de tautologiap (clausula)
+(defun tautologiap (clausula)
    (and flag-control-tautologia
         (interseccion (first clausula) (second clausula))
    )
 )
 
-(de eliminar-tautologias (clausulas)
+(defun eliminar-tautologias (clausulas)
    (if clausulas
       (if (tautologiap (first clausulas))
           (eliminar-tautologias (rest clausulas))
@@ -407,7 +407,7 @@
 
  ; (load "uti")       necesita: rotar, reemplazar
 
-(de fusiona-literal (literal literales &aux unif)
+(defun fusiona-literal (literal literales &aux unif)
    (if literales
       (if (<> (setq unif (unificar literal (first literales))) 'fail)
           unif
@@ -417,7 +417,7 @@
    )
 )
 
-(de fusionar (clausula &aux unif (positivos (first clausula))
+(defun fusionar (clausula &aux unif (positivos (first clausula))
                                  (negativos (second clausula))
                                  (respuestas (third clausula))
                                  (hubo-fusion nil)
@@ -454,7 +454,7 @@
    )
 )
 
-(de fusionar-clausulas (clausulas)
+(defun fusionar-clausulas (clausulas)
    (if flag-control-fusion
       (mapcar fusionar clausulas)
       clausulas
@@ -471,7 +471,7 @@
 
  ; (load "uti")        necesita: rotar
 
-(de unificar=> (literal1 literal2
+(defun unificar=> (literal1 literal2
                 &aux unif (variables (hallar-variables literal2))
                      (constantes (mapcar (lambda (x) (gensym 'k)) variables))
                      (unif1 (map-2-ar list variables constantes))
@@ -483,7 +483,7 @@
    )
 )
 
-(de subsume-literal (literal literales &aux unif)
+(defun subsume-literal (literal literales &aux unif)
    (if literales
       (if (<> (setq unif (unificar literal (first literales))) 'fail)
           unif
@@ -493,7 +493,7 @@
    )
 )
 
-(de subsume-literales (lit1 lit2 &aux unif1 unif2)       ; lit = literales
+(defun subsume-literales (lit1 lit2 &aux unif1 unif2)       ; lit = literales
    (if lit1
       (if (and (<> 'fail (setq unif1 (subsume-literal (first lit1) lit2)))
                (<> 'fail
@@ -508,7 +508,7 @@
    )
 )
 
-(de subsume (clausula1 clausula2
+(defun subsume (clausula1 clausula2
              &aux unif (variables (hallar-variables clausula2))
                   (constantes (mapcar (lambda (x) (gensym 'k)) variables))
                   (unif-k (map-2-ar list variables constantes))
@@ -526,7 +526,7 @@
    )
 )
 
-(de subsumida (clausula clausulas)
+(defun subsumida (clausula clausulas)
    (and clausulas
         (or (subsume (first clausulas) clausula)
             (subsumida clausula (rest clausulas))
@@ -534,7 +534,7 @@
    )
 )
 
-(de auto-depurar-subsumidas (clausulas)
+(defun auto-depurar-subsumidas (clausulas)
    (if flag-control-subsuncion
        (rep (length clausulas)
             (if (subsumida (first clausulas)
@@ -548,7 +548,7 @@
    clausulas
 )
 
-(de eliminar-subsumidas (clausulas1 clausulas2)
+(defun eliminar-subsumidas (clausulas1 clausulas2)
    (if flag-control-subsuncion
        (rep (length clausulas1)
             (if (subsumida (first clausulas1) clausulas2)
@@ -567,7 +567,7 @@
 
  ; (load "uti")      necesita: posicion
 
-(de monitor (expandidas expandibles)
+(defun monitor (expandidas expandibles)
    (if flag-monitor
        (progn (print "expandidas")
               (pp-clausulas expandidas)
@@ -579,7 +579,7 @@
    )
 )
 
-(de prin-elementos (lista)
+(defun prin-elementos (lista)
    (if lista
        (progn (prin2 (first lista))
               (prin-elementos (rest lista))
@@ -587,7 +587,7 @@
    )
 )
 
-(de pp-clausula (clausula &optional (columna 0) &rest opcion)
+(defun pp-clausula (clausula &optional (columna 0) &rest opcion)
    (prin2 (newstring columna \ ))
    (prin-elementos (list (sixth clausula) \:))
    (prin-elementos (first clausula))
@@ -602,12 +602,12 @@
    (terpri)
 )
 
-(de pp-clausulas (clausulas)
+(defun pp-clausulas (clausulas)
    (mapc (lambda (x) (pp-clausula x 9 'v)) clausulas)
    clausulas
 )
 
-(de recorrer-ancestros (clausula)
+(defun recorrer-ancestros (clausula)
    (if clausula
        (progn
            (terpri) (pp-clausula (fourth clausula) 0 'v)
@@ -631,7 +631,7 @@
    )
 )
 
-(de interrupcion ()
+(defun interrupcion ()
    (if flag-interrupcion
        (do ((char (prin2 "Interrupcion:") (console-in)))
            (((= char \ ) (print2 "cont")))
@@ -642,7 +642,7 @@
    )
 )
 
-(de shell (char &optional (clausula nil))
+(defun shell (char &optional (clausula nil))
    (cond
       ( (= char \l) (lisp))
       ( (and (= char \r) clausula) (recorrer-ancestros clausula))
@@ -658,11 +658,11 @@
 
  ; tipos de llamada
 
-(de ancho (base goal)
+(defun ancho (base goal)
    (busqueda nil (append base goal) (sacar-anonimas (hallar-raices goal)))
 )
 
-(de soporte (base goal)
+(defun soporte (base goal)
    (busqueda base goal (sacar-anonimas (hallar-raices goal)))
 )
 
@@ -670,11 +670,11 @@
 
 (de sin-restriccion (clausula) t)
 
-(de entrada-lineal (clausula)
+(defun entrada-lineal (clausula)
    (= (sixth clausula) 0)
 )
 
-(de restriccion-fusion (clausula)
+(defun restriccion-fusion (clausula)
    (or (= (seventh clausula) 'fusion)
        (= (sixth clausula) 0)
    )
@@ -682,7 +682,7 @@
 
  ; control de profundidad
 
-(de tope-profundidad (clausula)
+(defun tope-profundidad (clausula)
    (if limite-profundidad
        (= limite-profundidad (sixth clausula))
    )
@@ -690,7 +690,7 @@
 
  ; filtrado de ancestros
 
-(de ancestro (clausula1 clausula2)
+(defun ancestro (clausula1 clausula2)
    (and clausula2
         (or clausula1 clausula2)
             (ancestro clausula1 (fourth clausula2))
@@ -701,13 +701,13 @@
 
  ; tipos de funcion-h
 
-(de constante (clausula) 0)
+(defun constante (clausula) 0)
 
-(de menores (clausula)
+(defun menores (clausula)
    (+ (length (first clausula)) (length (second clausula)))
 )
 
-(de unidades (clausula)
+(defun unidades (clausula)
    (if (= (+ (length (first clausula)) (length (second clausula))) 1)
        0
        1
@@ -723,7 +723,7 @@
  ; respuesta contiene: eliminar-respuestas-y-mostrarlas, clausula-no-nula,
  ;                     interactuar, mostrar-solucion, pp-solucion
 
-(de eliminar-respuestas-y-mostrarlas
+(defun eliminar-respuestas-y-mostrarlas
          (resolventes raices &aux (primer-resolvente (first resolventes))
                                   (solucion (third primer-resolvente))
          )                         ; solucion es una posible solucion
@@ -755,7 +755,7 @@
   )
 )
 
-(de interactuar (&optional (clausula nil))
+(defun interactuar (&optional (clausula nil))
    (do ((char (prin2 "Mas (s/n)?") (console-in)))
        (((= char \s) (print 'si)) ((= char \n) (print 'no)))
        (if (<> (shell char clausula) 'nada)
@@ -764,7 +764,7 @@
    )
 )
 
-(de mostrar-solucion (variables solucion)
+(defun mostrar-solucion (variables solucion)
    (if (null variables)
        (print2 "Si.")
        (pp-solucion variables (first solucion))
@@ -776,14 +776,14 @@
    )
 )
 
-(de pp-solucion (variables solucion)
+(defun pp-solucion (variables solucion)
    (map-2-ar (lambda (x y) (prin2 x) (prin2 '=) (print y))
              variables
              (ltov solucion)
    )
 )
 
-(de clausula-no-nula (clausula)
+(defun clausula-no-nula (clausula)
    (or (first clausula) (second clausula))
 )
 
@@ -792,7 +792,7 @@
  ;                    colocar, ordenar, expandir, generar-resolventes,
  ;                    admisibles
 
-(de  busqueda (expandidas expandibles raices &aux resolventes (flag-mas t))
+(defun  busqueda (expandidas expandibles raices &aux resolventes (flag-mas t))
    (monitor expandidas expandibles)
    (interrupcion)
    (if (null expandibles)
@@ -819,7 +819,7 @@
    )
 )
 
-(de obtener-expandidas (expandidas-viejas aspirante heuristica
+(defun obtener-expandidas (expandidas-viejas aspirante heuristica
                         &aux (admisibilidad (first heuristica))
                        )
    (if (and (admisibilidad aspirante)
@@ -833,14 +833,14 @@
    )
 )
 
-(de obtener-expandibles (expandibles-viejas resolventes heuristica)
+(defun obtener-expandibles (expandibles-viejas resolventes heuristica)
    (ordenar resolventes
             (eliminar-subsumidas (rest expandibles-viejas) resolventes)
             heuristica
    )
 )
 
-(de colocar (elemento lista heuristica &aux (funcion-h (second heuristica))
+(defun colocar (elemento lista heuristica &aux (funcion-h (second heuristica))
                                             (prioridad (third heuristica))
             )
    (if (or (null lista)
@@ -853,7 +853,7 @@
    )
 )
 
-(de ordenar (lista lista-ordenada heuristica)
+(defun ordenar (lista lista-ordenada heuristica)
    (if lista
        (ordenar (rest lista)
                 (colocar (first lista) lista-ordenada heuristica)
@@ -863,7 +863,7 @@
    )
 )
 
-(de expandir (clausula clausulas)
+(defun expandir (clausula clausulas)
    (if clausulas
        (if (or (not flag-filtrado-ancestros)
                (= (sixth (first clausulas)) 0)
@@ -877,7 +877,7 @@
    )
 )
 
-(de generar-resolventes (expandidas expandibles raices)
+(defun generar-resolventes (expandidas expandibles raices)
    (auto-depurar-subsumidas
       (eliminar-subsumidas
          (eliminar-respuestas-y-mostrarlas               ; modifica flag-mas
@@ -893,7 +893,7 @@
    )
 )
 
-(de admisibles (lista heuristica &aux (admisibilidad (first heuristica)))
+(defun admisibles (lista heuristica &aux (admisibilidad (first heuristica)))
    (if lista
        (if (admisibilidad (first lista))
            (cons (first lista) (admisibles (rest lista) heuristica))
@@ -906,7 +906,7 @@
 
  ; inicial contiene: inicializacion, seth, on, on
 
-(de inicializacion ()
+(defun inicializacion ()
    (inicializar-gensym)
    (setq nro-clausulas 0)
 
@@ -936,7 +936,7 @@
    (off   flag-filtrado-ancestros)
 )
 
-(de seth ()
+(defun seth ()
    (setq heuristica-primaria
          (list admisibilidad-1 funcion-h-1 prioridad-1)
    )
@@ -963,7 +963,7 @@
  ; interprete contiene: interprete, compilar, armar-clausulas, armar-goal
  ;                      add, i, c
 
-(de interprete (&optional (base-objeto objeto)
+(defun interprete (&optional (base-objeto objeto)
                      (goal-fuente (progn (prin2 '?-) (read)))
                 &aux (base-interna (armar-clausulas base-objeto))
                      (goal-interno (armar-goal goal-fuente))
@@ -987,14 +987,14 @@
    )
 )
 
-(de compilar (base-fuente &optional (base-objeto 'objeto))
+(defun compilar (base-fuente &optional (base-objeto 'objeto))
    (set base-objeto
         (implicar (clausal base-fuente))
    )
 )
 
 
-(de armar-clausulas (implicaciones)
+(defun armar-clausulas (implicaciones)
    (ordenar
         (normalizar (mapcar (lambda (implicacion)
                                     (armar-clausula (separar implicacion))
@@ -1007,7 +1007,7 @@
    )
 )
 
-(de armar-goal (goal-fuente
+(defun armar-goal (goal-fuente
                  &aux (goal (clausal (list (negar goal-fuente))))
                       (variables (sacar-anonimas (hallar-variables goal)))
                )
@@ -1025,7 +1025,7 @@
    )
 )
 
-(de add (base formula)
+(defun add (base formula)
    (append base (implicar (clausal (list formula))))
 )
 
@@ -1041,26 +1041,26 @@
 
  ; (load "renombrar")  necesita: gensym
 
-(de skolemizar (existenciales universales)
+(defun skolemizar (existenciales universales)
    (mapcar (lambda (x) (list x (cons (gensym 'sk) universales)))
            existenciales
    )
 )
 
-(de variabilizar (universales)
+(defun variabilizar (universales)
    (mapcar (lambda (x) (gensym (chequear-variable x)))
            universales
    )
 )
 
-(de chequear-variable (x)
+(defun chequear-variable (x)
    (if (variablep x)
        x
        (insert (string \? x))
    )
 )
 
-(de sustituir (sust expr)
+(defun sustituir (sust expr)
    (cond
       ((atom expr) (valor sust expr))
       (t (cons (sustituir sust (first expr))
@@ -1070,33 +1070,33 @@
    )
 )
 
-(de conjuncion (formula)
+(defun conjuncion (formula)
    (and (= (largo formula) 3) (= (second formula) 'and))
 )
 
-(de disyuncion (formula)
+(defun disyuncion (formula)
    (and (= (largo formula) 3) (= (second formula) 'or))
 )
 
-(de negacion (formula)
+(defun negacion (formula)
    (and (= (largo formula) 2) (= (first formula) 'not))
 )
 
-(de universal (formula)
+(defun universal (formula)
    (and (= (largo formula) 3) (= (first formula) 'paratodo))
 )
 
-(de existencial (formula)
+(defun existencial (formula)
    (and (= (largo formula) 3) (= (first formula) 'existe))
 )
 
-(de largo (lista)
+(defun largo (lista)
    (if (listp lista)
        (length lista)
    )
 )
 
-(de vtol (expr)
+(defun vtol (expr)
    (cond
        ( (vectorp expr)
          (do ( (posicion (length expr) (sub1 posicion))
@@ -1110,7 +1110,7 @@
    )
 )
 
-(de ltov (expr)
+(defun ltov (expr)
    (cond
       (  (atom expr) expr)
       (  (and (= (length expr) 3)
@@ -1122,7 +1122,7 @@
    )
 )
 
-(de ltov1 (expr)
+(defun ltov1 (expr)
    (cond
       (  (null expr) '[])
       (  (atom expr) (vector '| expr))
@@ -1141,7 +1141,7 @@
 
  ; (load "subsume")    necesita: auto-depurar-subsumidas
 
-(de clausal (formulas)
+(defun clausal (formulas)
    (auto-depurar-subsumidas
       (eliminar-tautologias
          (clausal1 formulas)
@@ -1149,7 +1149,7 @@
    )
 )
 
-(de clausal1 (formulas)
+(defun clausal1 (formulas)
   (if formulas
       (append (conjout
                  (distribuir
@@ -1165,7 +1165,7 @@
   )
 )
 
-(de implout (formula &aux p q)
+(defun implout (formula &aux p q)
    (cond
       (  (atom formula) formula)
       (  (and (= (largo formula) 3)
@@ -1183,7 +1183,7 @@
    )
 )
 
-(de negin (formula)
+(defun negin (formula)
    (cond
       (  (atom formula) formula)
       (  (negacion formula) (negar (second formula)))
@@ -1191,7 +1191,7 @@
    )
 )
 
-(de negar (formula &aux p q)
+(defun negar (formula &aux p q)
    (cond
       (  (negacion formula) (negin (second formula)))
       (  (or (conjuncion formula) (disyuncion formula))
@@ -1213,7 +1213,7 @@
    )
 )
 
-(de cuantifout (formula &optional (param nil) &aux var sust)
+(defun cuantifout (formula &optional (param nil) &aux var sust)
    (cond
       (  (atom formula) formula)
       (  (universal formula)
@@ -1232,7 +1232,7 @@
    )
 )
 
-(de distribuir (formula &aux p q u v)
+(defun distribuir (formula &aux p q u v)
    (cond
       (  (atom formula) formula)
       (  (disyuncion formula)
@@ -1250,14 +1250,14 @@
    )
 )
 
-(de conjout (formula)
+(defun conjout (formula)
    (if (conjuncion formula)
        (append (conjout (first formula)) (conjout (third formula)))
        (list (disyout formula))
    )
 )
 
-(de disyout (formula &aux p q)
+(defun disyout (formula &aux p q)
    (if (not (disyuncion formula))
        (if (negacion formula)
            (list nil (rest formula))
@@ -1275,7 +1275,7 @@
 
  ; uso de globales: primer-resolvente
 
-(de reciclar (variables solucion &optional (hubo-reciclaje nil)
+(defun reciclar (variables solucion &optional (hubo-reciclaje nil)
                                  &aux (supuesto (first solucion))
              )
    (if solucion
@@ -1304,16 +1304,16 @@
    )
 )
 
-; (de crear-base ()                              out
-;   (append base-interna
-;           (mappend goal-afirmado supuestos-exitosos)
-;   )
-;)
+;;; (defun crear-base ()                              out
+;;;   (append base-interna
+;;;           (mappend goal-afirmado supuestos-exitosos)
+;;;   )
+;;;)
 
-;(de goal-afirmado (supuesto)                    out
-;)
+;;;(defun goal-afirmado (supuesto)                    out
+;;;)
 
-(de goal-instanciado (supuesto
+(defun goal-instanciado (supuesto
                         &aux (variables (first (third (first goal-interno))))
                      )
    (aplicar (map-2-ar list variables supuesto)
@@ -1323,7 +1323,7 @@
    )
 )
 
-(de incluido (literal literales)
+(defun incluido (literal literales)
    (if literales
        (or (<> (unificar=> (first literales) literal) 'fail)
            (incluido literal (rest literales))
@@ -1336,7 +1336,7 @@
  ; evaluar contiene:  evaluar, generar-resolventes-bis, pertenece-vacia,
  ;                    pertenece-vacia-bis
 
-(de evaluar (expandidas expandibles &aux resolventes)
+(defun evaluar (expandidas expandibles &aux resolventes)
    (monitor expandidas expandibles)
    (interrupcion)
    (if expandibles
@@ -1363,7 +1363,7 @@
    )
 )
 
-(de generar-resolventes-bis (expandidas expandibles)
+(defun generar-resolventes-bis (expandidas expandibles)
    (auto-depurar-subsumidas
       (eliminar-subsumidas
          (fusionar-clausulas
@@ -1376,7 +1376,7 @@
    )
 )
 
-(de pertenece-vacia (clausulas &aux (clausula (first clausulas)))
+(defun pertenece-vacia (clausulas &aux (clausula (first clausulas)))
    (if clausulas
        (or (and (null (first clausula)) (null (second clausula)))
            (pertenece-vacia (rest clausulas))
@@ -1384,7 +1384,7 @@
    )
 )
 
-(de pertenece-vacia-bis (clausulas &aux (clausula (first clausulas)))
+(defun pertenece-vacia-bis (clausulas &aux (clausula (first clausulas)))
    (and clausulas (null (first clausula)) (null (second clausula))))
 )
 
