@@ -22,7 +22,7 @@
 ;(print 'LGC-ok)
 
 
- ;;; uti contiene: cabeza, last, posicion, rotar, snoc, reemplazar,
+ ;;; uti contiene: cabeza, last_n, posicion, rotar, snoc, reemplazar,
  ;               separar, implicar, armar-clausula, numerar,
  ;               map-2-ar, union, interseccion, compactar,
  ;               compactar-orden, lisp, quit
@@ -36,7 +36,7 @@
   (- numero 1)
 )
 
-(defun last (lista)
+(defun last_n (lista)
    (first (reverse lista))
 )
 
