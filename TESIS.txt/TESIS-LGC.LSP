@@ -32,6 +32,9 @@
        (cons (first lista) (cabeza (rest lista) (sub1 numero)))
    )
 )
+(defun sub1 (numero)
+  (- numero 1)
+)
 
 (defun last (lista)
    (first (reverse lista))
