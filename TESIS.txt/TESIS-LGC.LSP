@@ -908,7 +908,7 @@
 
 (defun inicializacion ()
    (inicializar-gensym_n)
-   (setq nro-clausulas 0)
+   (defvar nro-clausulas 0)
 
    (on  flag-control-tautologia)
    (on  flag-control-fusion)
@@ -917,30 +917,30 @@
    (on  flag-interrupcion)
    (on  flag-reciclaje)
 
-   (setq llamada (eval ([soporte ancho] 1)))
+   (defvar llamada (eval ([soporte ancho] 1)))
 
-   (setq admisibilidad-1 (eval ([sin-restriccion] 1)))
-   (setq funcion-h-1 (eval ([constante menores unidades] 3)))
-   (setq prioridad-1 (eval ([vertical horizontal] 2)))
+   (defvar admisibilidad-1 (eval ([sin-restriccion] 1)))
+   (defvar funcion-h-1 (eval ([constante menores unidades] 3)))
+   (defvar prioridad-1 (eval ([vertical horizontal] 2)))
 
-   (setq admisibilidad-2
+   (defvar admisibilidad-2
          (eval ([sin-restriccion entrada-lineal restriccion-fusion] 1))
    )
-   (setq funcion-h-2 (eval ([constante menores unidades] 1)))
-   (setq prioridad-2 (eval ([vertical horizontal] 2)))
+   (defvar funcion-h-2 (eval ([constante menores unidades] 1)))
+   (defvar prioridad-2 (eval ([vertical horizontal] 2)))
 
    (seth)
 
-   (setq limite-profundidad nil)
+   (defvar limite-profundidad nil)
 
    (off   flag-filtrado-ancestros)
 )
 
 (defun seth ()
-   (setq heuristica-primaria
+   (defvar heuristica-primaria
          (list admisibilidad-1 funcion-h-1 prioridad-1)
    )
-   (setq heuristica-secundaria
+   (defvar heuristica-secundaria
          (list admisibilidad-2 funcion-h-2 prioridad-2)
    )
 )
@@ -1029,7 +1029,7 @@
    (append base (implicar (clausal (list formula))))
 )
 
-(setq i interprete c compilar)
+(defvar i interprete c compilar)
 
 (print 'interprete-ok)
 
