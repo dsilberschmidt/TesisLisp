@@ -24,7 +24,7 @@
 
  ;;; uti contiene: cabeza, last_n, posicion, rotar, snoc, reemplazar,
  ;               separar, implicar, armar-clausula, numerar,
- ;               map-2-ar, union, interseccion, compactar,
+ ;               map-2-ar, union_n, interseccion, compactar,
  ;               compactar-orden, lisp, quit
 
 (defun cabeza (lista numero)
@@ -110,7 +110,7 @@
    )
 )
 
-(defun union (lista1 lista2)
+(defun union_n (lista1 lista2)
    (compactar-orden (append lista1 lista2))
 )
 
@@ -240,7 +240,7 @@
 
  ; (load "unificar")   necesita: variablep, aplicar
 
- ; (load "uti")        necesita: union, map-2-ar
+ ; (load "uti")        necesita: union_n, map-2-ar
 
  ; (load "uticla")     necesita: renombrar-anonima
 
@@ -278,7 +278,7 @@
    (if (variablep expresion)
        (list expresion)
        (if (listp expresion)
-           (union (hallar-variables (first expresion))
+           (union_n (hallar-variables (first expresion))
                   (hallar-variables (rest expresion))
            )
        )
@@ -363,12 +363,12 @@
           (append (resolver-diagonal
                        (first clausula1) (second clausula1)
                        (first clausula2) (second clausula2)
-                       (union (third clausula1) (third clausula2))
+                       (union_n (third clausula1) (third clausula2))
                   )
                   (resolver-diagonal
                        (first clausula2) (second clausula2)
                        (first clausula1) (second clausula1)
-                       (union (third clausula1) (third clausula2))
+                       (union_n (third clausula1) (third clausula2))
                   )
           )
   )
@@ -734,7 +734,7 @@
         )
         (if (and (> (length solucion) 1)
                  flag-reciclaje
-                 raices                      ; sacable por union
+                 raices                      ; sacable por union_n
                  (reciclar raices solucion)
             )
             (if flag-mas
@@ -1135,7 +1135,7 @@
  ; clausal contiene:   clausal, clausal1, implout, negin, negar, cuantifout,
  ;                     distribuir, conjout, disyout
 
- ; (load "uti")        necesita: map-2-ar, union
+ ; (load "uti")        necesita: map-2-ar, union_n
 
  ; (load "tautologia") necesita: eliminar-tautologias
 
@@ -1265,7 +1265,7 @@
        )
        (setq p (disyout (first formula)))
        (setq q (disyout (third formula)))
-       (map-2-ar union p q)
+       (map-2-ar union_n p q)
    )
 )
 
