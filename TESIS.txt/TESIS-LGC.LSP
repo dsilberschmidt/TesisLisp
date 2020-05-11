@@ -1,27 +1,28 @@
 
- ; LGC Lenguaje de Programacion Logica
+;;; LGC Lenguaje de Programacion Logica
 
-(load "uti")
-(load "unificar")
-(load "renombrar")
-(load "resolver")
-(load "tautologia")
-(load "fusion")
-(load "subsume")
-(load "monitor")
-(load "estrategia")
-(load "respues")
-(load "busqueda")
-(load "inicial")
-(load "interprete")
-(load "uticla")
-(load "clausal")
-(load "reciclar")
-(load "evaluar")
+;;; (load "uti")
+;;; (load "unificar")
+;;; (load "renombrar")
+;;; (load "resolver")
+;;; (load "tautologia")
+;;; (load "fusion")
+;;; (load "subsume")
+;;; (load "monitor")
+;;; (load "estrategia")
+;;; (load "respues")
+;;; (load "busqueda")
+;;; (load "inicial")
+;;; (load "interprete")
+;;; (load "uticla")
+;;; (load "clausal")
+;;; (load "reciclar")
+;;; (load "evaluar")
 (terpri)
-(print 'LGC-ok)
-
- ; uti contiene: cabeza, last, posicion, rotar, snoc, reemplazar,
+;(print 'LGC-ok)
+
+
+ ;;; uti contiene: cabeza, last, posicion, rotar, snoc, reemplazar,
  ;               separar, implicar, armar-clausula, numerar,
  ;               map-2-ar, union, interseccion, compactar,
  ;               compactar-orden, lisp, quit
