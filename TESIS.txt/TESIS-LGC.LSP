@@ -668,7 +668,7 @@
 
  ; tipos de seleccion
 
-(de sin-restriccion (clausula) t)
+(defun sin-restriccion (clausula) t)
 
 (defun entrada-lineal (clausula)
    (= (sixth clausula) 0)
