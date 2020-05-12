@@ -39,7 +39,7 @@
 (defun last_n (lista)
    (first (reverse lista))
 )
-
+(defun pertenece (elemento lista) (member elemento lista))
 (defun posicion (elemento lista &optional (lugar 1))
    (if lista
       (if (= (first lista) elemento)
