@@ -715,7 +715,7 @@
 )
  ; tipos de prioridad
 
-(defvar horizontal <)     ;originalmente setq
+(defvar horizontal :<)     ;originalmente setq y <
 
 (defvar vertical :<=)      ;originalmente setq y <=
 
