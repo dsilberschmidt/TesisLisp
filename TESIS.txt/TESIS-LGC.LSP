@@ -924,7 +924,7 @@
    (defvar prioridad-1 horizontal)          ; (eval ([vertical horizontal] 2)))
 
    (defvar admisibilidad-2 sin-restriccion) ; (eval ([sin-restriccion entrada-lineal restriccion-fusion] 1))
-   )
+
    (defvar funcion-h-2 :constante)           ; (eval ([constante menores unidades] 1)))
    (defvar prioridad-2 horizontal)          ; (eval ([vertical horizontal] 2)))
 
