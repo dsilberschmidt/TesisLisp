@@ -928,21 +928,26 @@
    (defvar funcion-h-2 :constante)           ; (eval ([constante menores unidades] 1)))
    (defvar prioridad-2 horizontal)          ; (eval ([vertical horizontal] 2)))
 
-   (seth)
-
-   (defvar limite-profundidad nil)
-
-   (defvar flag-filtrado-ancestros nil)
-)
-
-(defun seth ()
+;   (seth)
    (defvar heuristica-primaria
          (list admisibilidad-1 funcion-h-1 prioridad-1)
    )
    (defvar heuristica-secundaria
          (list admisibilidad-2 funcion-h-2 prioridad-2)
    )
+   (defvar limite-profundidad nil)
+
+   (defvar flag-filtrado-ancestros nil)
 )
+
+;;;(defun seth ()
+;;;   (defvar heuristica-primaria
+;;;         (list admisibilidad-1 funcion-h-1 prioridad-1)
+;;;   )
+;;;   (defvar heuristica-secundaria
+;;;         (list admisibilidad-2 funcion-h-2 prioridad-2)
+;;;   )
+;;;)
 
 (defun on (flags)                       ;originalmente df
    (mapc (lambda (flag) (set flag t))
