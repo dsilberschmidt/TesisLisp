@@ -715,9 +715,9 @@
 )
  ; tipos de prioridad
 
-(defvar horizontal :<)     ;originalmente setq y <
+(defvar horizontal '<)     ;originalmente setq y <
 
-(defvar vertical :<=)      ;originalmente setq y <=
+(defvar vertical '<=)      ;originalmente setq y <=
 
 (print 'estrategia-ok)
  ; respuesta contiene: eliminar-respuestas-y-mostrarlas, clausula-no-nula,
@@ -917,16 +917,16 @@
    (defvar  flag-interrupcion t)
    (defvar  flag-reciclaje t)
 
-   (defvar llamada soporte)                 ; (eval ([soporte ancho] 1)))
+   (defvar llamada 'soporte)                 ; (eval ([soporte ancho] 1)))
 
-   (defvar admisibilidad-1 sin-restriccion) ; (eval ([sin-restriccion] 1)))
-   (defvar funcion-h-1 unidades)            ; (eval ([constante menores unidades] 3)))
-   (defvar prioridad-1 horizontal)          ; (eval ([vertical horizontal] 2)))
+   (defvar admisibilidad-1 'sin-restriccion) ; (eval ([sin-restriccion] 1)))
+   (defvar funcion-h-1 'unidades)            ; (eval ([constante menores unidades] 3)))
+   (defvar prioridad-1 'horizontal)          ; (eval ([vertical horizontal] 2)))
 
-   (defvar admisibilidad-2 sin-restriccion) ; (eval ([sin-restriccion entrada-lineal restriccion-fusion] 1))
+   (defvar admisibilidad-2 'sin-restriccion) ; (eval ([sin-restriccion entrada-lineal restriccion-fusion] 1))
 
-   (defvar funcion-h-2 :constante)           ; (eval ([constante menores unidades] 1)))
-   (defvar prioridad-2 horizontal)          ; (eval ([vertical horizontal] 2)))
+   (defvar funcion-h-2 'constante)           ; (eval ([constante menores unidades] 1)))
+   (defvar prioridad-2 'horizontal)          ; (eval ([vertical horizontal] 2)))
 
 ;   (seth)
    (defvar heuristica-primaria
@@ -985,7 +985,7 @@
        )
        ( 'on     (eval `(on  ,(read))) (interprete base-objeto))
        ( 'off    (eval `(off ,(read))) (interprete base-objeto))
-       ( t       (llamada base-interna goal-interno)
+       ( t       (funcall llamada base-interna goal-interno)
                  (interprete base-objeto)
        )
    )
