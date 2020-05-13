@@ -35,11 +35,19 @@
 (defun sub1 (numero)
   (- numero 1)
 )
-(defun add1 (numero) (+ numero 1))
+
+(defun add1 (numero)
+  (+ numero 1)
+)
+
 (defun last_n (lista)
    (first (reverse lista))
 )
-(defun pertenece (elemento lista) (member elemento lista))
+
+(defun pertenece (elemento lista)
+    (member elemento lista)
+)
+
 (defun posicion (elemento lista &optional (lugar 1))
    (if lista
       (if (= (first lista) elemento)
@@ -1391,7 +1399,7 @@
 )
 
 (defun pertenece-vacia-bis (clausulas &aux (clausula (first clausulas)))
-   (and clausulas (null (first clausula)) (null (second clausula))))
+   (and clausulas (null (first clausula)) (null (second clausula)))
 )
 
 (print 'evaluar-ok)
