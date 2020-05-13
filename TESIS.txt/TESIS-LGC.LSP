@@ -1033,7 +1033,9 @@
    (append base (implicar (clausal (list formula))))
 )
 
-(defvar i interprete c compilar)
+(defvar i interprete)
+
+(defvar c compilar)
 
 (print 'interprete-ok)
 
