@@ -1137,10 +1137,10 @@
 )
 
 (defun ltov1 (expr)
-   (cond
-      (  (null expr) '[])
-      (  (atom expr) (vector '| expr))
-      (t (vector (newvector 1 (ltov (second expr))) (ltov1 (third expr))))
+    (cond
+       (  (null expr) nil)
+       (  (atom expr) (vector "|" expr))
+       (t (vector (vector 1 (ltov (second expr)) (ltov1 (third expr)))))
    )
 )
 
