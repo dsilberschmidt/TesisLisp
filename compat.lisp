@@ -47,11 +47,12 @@
   (assert (= (add 1 2) 3))
   (assert (= (add 1 2 3) 6))
   ;; selectq (SIN comillas en las ramas)
-  (let ((r nil))
-    (selectq foo
+    (let ((r nil))
+    (selectq 'foo
       (bar (setf r :bad))
       (foo (setf r :ok)))
     (assert (eq r :ok)))
+
   ;; on/off (lexical ok)
   (let ((flag nil)) (on flag) (assert flag) (off flag) (assert (null flag)))
   ;; <> , sub1, append+
