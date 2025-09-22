@@ -1,4 +1,4 @@
-;;;; compat.lisp  — shim mínimo para dialecto pre-CL
+;;;; compat.lisp — shim mínimo para dialecto pre-CL
 
 ;; --- Lector: [a b c] => (a b c)
 (set-macro-character #\[
@@ -8,14 +8,17 @@
 
 ;; --- Azúcares y utilidades del dialecto
 
+;; DE: mapea &OPT (cualquiera sea el paquete) -> &OPTIONAL
 (defmacro de (name args &body body)
   (labels ((fix (lst)
-             (cond
-               ((null lst) nil)
-               ((and (symbolp (first lst))
-                     (string= (symbol-name (first lst)) "&OPT"))
-                (cons '&optional (fix (rest lst))))
-               (t (cons (first lst) (fix (rest lst)))))))
+             (if (endp lst)
+                 nil
+                 (let ((h (first lst)) (t (cdr lst)))
+                   (cond
+                     ((and (symbolp h)
+                           (string= (symbol-name h) "&OPT"))
+                      (cons '&optional (fix t)))
+                     (t (cons h (fix t))))))))
     `(defun ,name ,(fix args) ,@body)))
 
 (defmacro on  (var) `(setf ,var t))
@@ -42,22 +45,17 @@
 
 ;; ---------------- Tests del shim
 (defun run-shim-tests ()
-  ;; [] lector
   (assert (equal (with-input-from-string (s "[a b (c d)]") (read s))
                  '(a b (c d))))
-  ;; de + &opt
   (de add (x y &opt z) (+ x y (or z 0)))
   (assert (= (add 1 2) 3))
   (assert (= (add 1 2 3) 6))
-  ;; selectq: clave citada
   (let ((r nil))
     (selectq 'foo
       (bar (setf r :bad))
       (foo (setf r :ok)))
     (assert (eq r :ok)))
-  ;; on/off
   (let ((flag nil)) (on flag) (assert flag) (off flag) (assert (null flag)))
-  ;; <> , sub1, append+
   (assert (<> 'a 'b))
   (assert (not (<> 'a 'a)))
   (assert (= (sub1 5) 4))
