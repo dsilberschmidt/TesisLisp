@@ -9,9 +9,9 @@
   (unless (find-package :tesis)
     (defpackage :tesis
       (:use :cl :compat)
-      (:shadow rest last))))   ; << evitar choques con CL:REST y CL:LAST
+      (:shadow rest last union))))   ; sombras conflictivas
 
-;; 2) Cargar el shim dentro del paquete :compat (sus símbolos quedan ahí)
+;; 2) Cargar el shim en :compat
 (let ((*package* (find-package :compat)))
   (load "compat.lisp"))
 

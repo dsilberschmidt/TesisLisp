@@ -10,9 +10,12 @@
 
 (defmacro de (name args &body body)
   (labels ((fix (lst)
-             (cond ((null lst) nil)
-                   ((eq (first lst) '&opt) (cons '&optional (fix (rest lst))))
-                   (t (cons (first lst) (fix (rest lst)))))))
+             (cond
+               ((null lst) nil)
+               ((and (symbolp (first lst))
+                     (string= (symbol-name (first lst)) "&OPT"))
+                (cons '&optional (fix (rest lst))))
+               (t (cons (first lst) (fix (rest lst)))))))
     `(defun ,name ,(fix args) ,@body)))
 
 (defmacro on  (var) `(setf ,var t))
@@ -46,14 +49,13 @@
   (de add (x y &opt z) (+ x y (or z 0)))
   (assert (= (add 1 2) 3))
   (assert (= (add 1 2 3) 6))
-  ;; selectq (SIN comillas en las ramas)
-    (let ((r nil))
+  ;; selectq: clave citada
+  (let ((r nil))
     (selectq 'foo
       (bar (setf r :bad))
       (foo (setf r :ok)))
     (assert (eq r :ok)))
-
-  ;; on/off (lexical ok)
+  ;; on/off
   (let ((flag nil)) (on flag) (assert flag) (off flag) (assert (null flag)))
   ;; <> , sub1, append+
   (assert (<> 'a 'b))
