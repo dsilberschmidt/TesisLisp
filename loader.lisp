@@ -20,7 +20,6 @@
 (in-package :tesis)
 
 ;; 4) Prelude de compatibilidad (antes de compilar .LSP)
-;; --- funciones y utilidades que espera el código antiguo ---
 
 (defun rest (lst &optional (n 1)) (nthcdr n lst))
 (defun last (lst) (if (consp lst) (car (cl:last lst)) nil))
@@ -38,23 +37,15 @@
          (symbol (symbol-name x))
          (string x))))
 
-;; MacLisp-style NTH: (nth lista n)  << ojo: orden invertido respecto a CL
+;; MacLisp-style NTH: (nth lista n)  (orden invertido respecto a CL)
 (defun nth (lst n)
   (etypecase lst
     (list (cl:nth n lst))
     (string (char-code (char lst n)))))
 
-;; Vars “predefinidas” que aparecen en el código
-(defparameter || nil)          ;; símbolo '|| usado como variable
-(defparameter ?  (char-code #\?))  ;; ? como entero (para compararlo con =)
-
-;; En varios sitios hacen (mapcar FIRST lst) sin #'…  => bindeamos funciones en vars
-(defparameter first   #'cl:first)
-(defparameter second  #'cl:second)
-(defparameter third   #'cl:third)
-(defparameter fourth  #'cl:fourth)
-(defparameter fifth   #'cl:fifth)
-(defparameter sixth   #'cl:sixth)
+;; Vars usadas en el código legado
+(defparameter || nil)
+(defparameter ?  (char-code #\?))
 
 ;; 5) Compilar primero (detecta issues temprano)
 (mapc #'compile-file

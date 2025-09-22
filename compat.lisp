@@ -13,12 +13,12 @@
   (labels ((fix (lst)
              (if (endp lst)
                  nil
-                 (let ((h (first lst)) (t (cdr lst)))
+                 (let ((h (first lst)) (tail (cdr lst)))
                    (cond
                      ((and (symbolp h)
                            (string= (symbol-name h) "&OPT"))
-                      (cons '&optional (fix t)))
-                     (t (cons h (fix t))))))))
+                      (cons '&optional (fix tail)))
+                     (t (cons h (fix tail))))))))
     `(defun ,name ,(fix args) ,@body)))
 
 (defmacro on  (var) `(setf ,var t))
