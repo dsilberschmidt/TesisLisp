@@ -10,7 +10,7 @@
     (defpackage :tesis
       (:use :cl :compat)
       ;; Sombras por choques/semánticas de dialecto
-      (:shadow rest last union gensym nth))))
+      (:shadow rest last union gensym nth if list))))
 
 ;; 2) Cargar shim en :compat
 (let ((*package* (find-package :compat)))
@@ -21,6 +21,7 @@
 
 ;; 4) Prelude de compatibilidad (antes de compilar .LSP)
 
+;; ---- A. PRIMITIVAS Y UTILIDADES ----
 (defun rest (lst &optional (n 1)) (nthcdr n lst))
 (defun last (lst) (if (consp lst) (car (cl:last lst)) nil))
 (defun union (a b) (cl:union a b :test #'equal))
@@ -43,9 +44,45 @@
     (list (cl:nth n lst))
     (string (char-code (char lst n)))))
 
-;; Vars usadas en el código legado
-(defparameter || nil)
+;; ---- B. VARS HEREDADAS QUE SE USAN EN TOPLEVEL ----
+;; Importante: ligar || ANTES de compilar/cargar cualquier .LSP
+(defparameter || nil)          ;; símbolo de nombre vacío
 (defparameter ?  (char-code #\?))
+
+;; En el código histórico aparecen llamadas como (MAP-2-AR LIST ...).
+;; Sombramos LIST y lo ligamos a la función CL:LIST para ese uso.
+(defparameter list #'cl:list)
+
+;; ---- C. IF multi-rama (estilo MacLisp): (if test1 then1 test2 then2 ... [else])
+(defmacro if (test then &rest more)
+  (cond
+    ((null more) `(cl:if ,test ,then))
+    ((null (cdr more)) `(cl:if ,test ,then ,(car more)))
+    (t ;; más de 1 par -> cond anidado
+     (let ((pairs '()) (else-form nil) (rest more)))
+       ;; partir en pares (test then) y opcional else final
+       (loop while rest do
+         (let ((a (pop rest)))
+           (if rest
+               (let ((b (pop rest))) (push (list a b) pairs))
+               (setf else-form a))))
+       (setf pairs (nreverse pairs))
+       `(cond
+          (,test ,then)
+          ,@pairs
+          ,@(when else-form `((t ,else-form))))))))
+
+;; ---- D. Macro DF (usada para ON/OFF en listas de flags)
+(defmacro df (fn (flags) &body body)
+  (declare (ignore body))
+  (let ((tmp (gensym "FLAGS")))
+    `(let ((,tmp ,flags))
+       (mapc (lambda (flag)
+               (set flag ,(cond
+                            ((eq fn 'compat:on) t)
+                            ((eq fn 'compat:off) nil)
+                            (t nil))))
+             ,tmp))))
 
 ;; 5) Compilar primero (detecta issues temprano)
 (mapc #'compile-file
