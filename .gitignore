@@ -1,2 +1,4 @@
 *.fasl
 TESIS/*.fasl
+*.fasl
+TESIS/*.fasl
