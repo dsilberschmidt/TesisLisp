@@ -9,8 +9,8 @@
   (unless (find-package :tesis)
     (defpackage :tesis
       (:use :cl :compat)
-      ;; Sombras por choques con CL
-      (:shadow rest last union gensym))))
+      ;; Sombras por choques/semánticas de dialecto
+      (:shadow rest last union gensym nth))))
 
 ;; 2) Cargar shim en :compat
 (let ((*package* (find-package :compat)))
@@ -19,16 +19,42 @@
 ;; 3) Entrar a :tesis
 (in-package :tesis)
 
-;; 4) Prelude de compatibilidad en :tesis (antes de compilar .LSP)
-;;    Define las funciones que el código antiguo espera en este paquete.
+;; 4) Prelude de compatibilidad (antes de compilar .LSP)
+;; --- funciones y utilidades que espera el código antiguo ---
+
 (defun rest (lst &optional (n 1)) (nthcdr n lst))
 (defun last (lst) (if (consp lst) (car (cl:last lst)) nil))
 (defun union (a b) (cl:union a b :test #'equal))
 (defun gensym (&optional (prefix "G")) (cl:gensym prefix))
 (defun add1 (x) (1+ x))
+(defun sub1 (x) (1- x))
 (defun snoc (x lst) (append lst (list x)))
 (defun pertenece (x lst) (member x lst :test #'equal))
-(defun pname (x) (if (symbolp x) (symbol-name x) (error "PNAME: ~S no es símbolo" x)))
+
+;; MacLisp-style PNAME: lista de códigos ASCII del nombre del símbolo
+(defun pname (x)
+  (map 'list #'char-code
+       (etypecase x
+         (symbol (symbol-name x))
+         (string x))))
+
+;; MacLisp-style NTH: (nth lista n)  << ojo: orden invertido respecto a CL
+(defun nth (lst n)
+  (etypecase lst
+    (list (cl:nth n lst))
+    (string (char-code (char lst n)))))
+
+;; Vars “predefinidas” que aparecen en el código
+(defparameter || nil)          ;; símbolo '|| usado como variable
+(defparameter ?  (char-code #\?))  ;; ? como entero (para compararlo con =)
+
+;; En varios sitios hacen (mapcar FIRST lst) sin #'…  => bindeamos funciones en vars
+(defparameter first   #'cl:first)
+(defparameter second  #'cl:second)
+(defparameter third   #'cl:third)
+(defparameter fourth  #'cl:fourth)
+(defparameter fifth   #'cl:fifth)
+(defparameter sixth   #'cl:sixth)
 
 ;; 5) Compilar primero (detecta issues temprano)
 (mapc #'compile-file
