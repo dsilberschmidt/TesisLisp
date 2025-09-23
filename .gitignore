@@ -1,4 +1,10 @@
+# Lisp build artifacts
 *.fasl
+*.cfasl
+*.ufasl
+*.x86f
 TESIS/*.fasl
-*.fasl
-TESIS/*.fasl
+
+# SBCL core dumps / temp
+core
+*.core

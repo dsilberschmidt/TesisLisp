@@ -19,25 +19,18 @@
 ;; 3) Entrar a :tesis
 (in-package :tesis)
 
-;; 4) Definir PRIMERO la macro IF (multi-rama) — usa CL:* por dentro
-(defmacro if (test then &rest more)
+;; 3.1) Silenciar notas de compilador (ruido tipo "deleting unreachable code")
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (declaim (sb-ext:muffle-conditions sb-ext:compiler-note)))
+
+;; 4) Definir PRIMERO la macro IF (MacLisp-style):
+;; (if TEST THEN . ELSE-FORMS)  => (cl:if TEST THEN (cl:progn ...ELSE-FORMS...))
+(defmacro if (test then &rest else-forms)
   (cond
-    ((null more) `(cl:if ,test ,then))
-    ((null (cdr more)) `(cl:if ,test ,then ,(car more)))
-    (t
-     (let* ((items (cons test (cons then more)))
-            (pairs '())
-            (tail items))
-       (loop while (and tail (second tail)) do
-         (push (list (first tail) (second tail)) pairs)
-         (setf tail (cddr tail)))
-       (let ((else-form (first tail)))
-         `(cl:cond
-            ,@(nreverse pairs)
-            ,@(when else-form `((t ,else-form)))))))))
+    ((null else-forms) `(cl:if ,test ,then))
+    (t `(cl:if ,test ,then (cl:progn ,@else-forms)))))
 
 ;; 5) Prelude de compatibilidad (antes de compilar .LSP)
-;;    OJO: usar CL:* explícito cuando pueda colisionar con sombras locales.
 
 (defun rest (lst &optional (n 1)) (cl:nthcdr n lst))
 (defun last (lst) (cl:if (cl:consp lst) (cl:car (cl:last lst)) nil))
