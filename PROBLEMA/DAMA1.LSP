@@ -10,4 +10,3 @@
           (paratodo (x) ((hay x dama) xor (hay x tigre)))
        )
 )
-
