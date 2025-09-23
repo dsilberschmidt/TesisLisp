@@ -44,12 +44,11 @@
 (deftype string () 'cl:string)
 (deftype vector () 'cl:vector)
 
-;; PNAME (lista de códigos)
+;; PNAME (nombre como cadena)
 (defun pname (x)
-  (cl:map 'cl:string #'cl:char-code
-          (etypecase x
-            (symbol (cl:symbol-name x))
-            (string x))))
+  (etypecase x
+    (symbol (cl:symbol-name x))
+    (string x)))
 
 ;; NTH estilo MacLisp: (nth lista n)
 (defun nth (lst n)

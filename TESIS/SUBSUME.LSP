@@ -9,7 +9,10 @@
 
 (de unificar=> (literal1 literal2
                 &aux unif (variables (hallar-variables literal2))
-                     (constantes (mapcar (lambda (x) (gensym 'k)) variables))
+                     (constantes (mapcar (lambda (x)
+                                           (declare (ignore x))
+                                           (gensym 'k))
+                                       variables))
                      (unif1 (map-2-ar #'list variables constantes))
                      (unif2 (map-2-ar #'list constantes variables))
                )
@@ -46,7 +49,10 @@
 
 (de subsume (clausula1 clausula2
              &aux unif (variables (hallar-variables clausula2))
-                  (constantes (mapcar (lambda (x) (gensym 'k)) variables))
+                  (constantes (mapcar (lambda (x)
+                                        (declare (ignore x))
+                                        (gensym 'k))
+                                    variables))
                   (unif-k (map-2-ar #'list variables constantes))
                   (clausula-k (aplicar unif-k clausula2))
             )

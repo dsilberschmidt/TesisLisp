@@ -15,7 +15,10 @@
 
  ; tipos de seleccion
 
-(de sin-restriccion (clausula) t)
+(de sin-restriccion (clausula)
+   (declare (ignore clausula))
+   t
+)
 
 (de entrada-lineal (clausula)
    (= (sixth clausula) 0)
@@ -47,7 +50,10 @@
 
  ; tipos de funcion-h
 
-(de constante (clausula) 0)
+(de constante (clausula)
+   (declare (ignore clausula))
+   0
+)
 
 (de menores (clausula)
    (+ (length (first clausula)) (length (second clausula)))

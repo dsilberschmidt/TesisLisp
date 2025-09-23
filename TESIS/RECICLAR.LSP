@@ -16,7 +16,7 @@
                             (cons supuesto supuestos-exitosos)
                       )
                       (pp-solucion variables supuesto)
-                      (if (= (interactuar primer-resolvente) 'si)
+                      (if (eq (interactuar primer-resolvente) 'si)
                           (reciclar variables (rest solucion) 'true)
                           (setq flag-mas nil)
                           'true
