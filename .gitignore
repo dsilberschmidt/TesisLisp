@@ -8,3 +8,4 @@ TESIS/*.fasl
 # SBCL core dumps / temp
 core
 *.core
+sbcl.log
