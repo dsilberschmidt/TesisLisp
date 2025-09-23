@@ -70,6 +70,7 @@
 (defparameter |v| (cl:char-code #\v))
 (defparameter |s| (cl:char-code #\s))
 (defparameter |n| (cl:char-code #\n))
+(defparameter |q| (cl:char-code #\q))
 
 ;; LIST “por nombre” en (MAP-2-AR LIST ...)
 (defparameter list #'cl:list)
@@ -87,6 +88,23 @@
 (defparameter limite-profundidad nil)
 (defparameter i nil)
 (defparameter c nil)
+(defvar objeto nil)
+(defvar nro-clausulas 0)
+(defvar heuristica-primaria nil)
+(defvar heuristica-secundaria nil)
+(defvar flag-mas nil)
+(defvar supuestos-exitosos nil)
+(defvar supuestos-fracasados nil)
+(defvar base-interna nil)
+(defvar goal-interno nil)
+(defvar primer-resolvente nil)
+(defvar llamada nil)
+(defvar admisibilidad-1 nil)
+(defvar admisibilidad-2 nil)
+(defvar funcion-h-1 nil)
+(defvar funcion-h-2 nil)
+(defvar prioridad-1 nil)
+(defvar prioridad-2 nil)
 
 ;; STRING del dialecto: concatena símbolos/strings/char-codes/listas de codes/etc.
 (defun string (&rest parts)
@@ -119,11 +137,6 @@
 (defmacro vector-numeros (i) `(cl:aref vector-numeros ,i))
 
 (defun memvec (item vec) (position item vec :test #'cl:equal))
-(defun store (vec i val)
-  (setf (cl:aref vec i) val)
-  ;; para soportar ((STORE ...) POSICION) => POSICION
-  (cl:lambda (x) x))
-
 (defun insert (name)
   ;; Inserta símbolo (intern) a partir del string NAME en el paquete :TESIS
   (cl:intern name (find-package :tesis)))
@@ -173,19 +186,33 @@
     (cl:char-code (next-char))))
 
 ;; 6) Compilar primero (detecta issues temprano)
-(mapc #'cl:compile-file
-      '("TESIS/UTI.LSP" "TESIS/UNIFICAR.LSP" "TESIS/RENOMBRA.LSP" "TESIS/RESOLVER.LSP"
-        "TESIS/TAUTOLOG.LSP" "TESIS/FUSION.LSP" "TESIS/SUBSUME.LSP" "TESIS/MONITOR.LSP"
-        "TESIS/ESTRATEG.LSP" "TESIS/RESPUES.LSP" "TESIS/BUSQUEDA.LSP" "TESIS/INICIAL.LSP"
-        "TESIS/INTERPRE.LSP" "TESIS/UTICLA.LSP" "TESIS/CLAUSAL.LSP" "TESIS/RECICLAR.LSP"
-        "TESIS/EVALUAR.LSP" "TESIS/LGC.LSP"))
+(cl:with-compilation-unit ()
+  (mapc #'cl:compile-file
+        '("TESIS/UTI.LSP"
+          "TESIS/UNIFICAR.LSP"
+          "TESIS/RENOMBRA.LSP"
+          "TESIS/UTICLA.LSP"
+          "TESIS/RESOLVER.LSP"
+          "TESIS/TAUTOLOG.LSP"
+          "TESIS/FUSION.LSP"
+          "TESIS/SUBSUME.LSP"
+          "TESIS/MONITOR.LSP"
+          "TESIS/RESPUES.LSP"
+          "TESIS/RECICLAR.LSP"
+          "TESIS/BUSQUEDA.LSP"
+          "TESIS/ESTRATEG.LSP"
+          "TESIS/CLAUSAL.LSP"
+          "TESIS/INICIAL.LSP"
+          "TESIS/EVALUAR.LSP"
+          "TESIS/INTERPRE.LSP"
+          "TESIS/LGC.LSP")))
 
 ;; 7) Cargar FASL
 (mapc #'cl:load
-      '("TESIS/UTI.fasl" "TESIS/UNIFICAR.fasl" "TESIS/RENOMBRA.fasl" "TESIS/RESOLVER.fasl"
-        "TESIS/TAUTOLOG.fasl" "TESIS/FUSION.fasl" "TESIS/SUBSUME.fasl" "TESIS/MONITOR.fasl"
-        "TESIS/ESTRATEG.fasl" "TESIS/RESPUES.fasl" "TESIS/BUSQUEDA.fasl" "TESIS/INICIAL.fasl"
-        "TESIS/INTERPRE.fasl" "TESIS/UTICLA.fasl" "TESIS/CLAUSAL.fasl" "TESIS/RECICLAR.fasl"
-        "TESIS/EVALUAR.fasl" "TESIS/LGC.fasl"))
+      '("TESIS/UTI.fasl" "TESIS/UNIFICAR.fasl" "TESIS/RENOMBRA.fasl" "TESIS/UTICLA.fasl"
+        "TESIS/RESOLVER.fasl" "TESIS/TAUTOLOG.fasl" "TESIS/FUSION.fasl" "TESIS/SUBSUME.fasl"
+        "TESIS/MONITOR.fasl" "TESIS/RESPUES.fasl" "TESIS/RECICLAR.fasl" "TESIS/BUSQUEDA.fasl"
+        "TESIS/ESTRATEG.fasl" "TESIS/CLAUSAL.fasl" "TESIS/INICIAL.fasl" "TESIS/EVALUAR.fasl"
+        "TESIS/INTERPRE.fasl" "TESIS/LGC.fasl"))
 
 (cl:format t "~&LGC cargado.~%")

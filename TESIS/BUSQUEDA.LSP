@@ -33,7 +33,7 @@
 (de obtener-expandidas (expandidas-viejas aspirante heuristica
                         &aux (admisibilidad (first heuristica))
                        )
-   (if (and (admisibilidad aspirante)
+   (if (and (funcall admisibilidad aspirante)
             (not (subsumida aspirante expandidas-viejas))
        )
        (colocar aspirante
@@ -55,7 +55,8 @@
                                             (prioridad (third heuristica))
             )
    (if (or (null lista)
-           (prioridad (funcion-h elemento) (funcion-h (first lista)))
+           (funcall prioridad (funcall funcion-h elemento)
+                    (funcall funcion-h (first lista)))
        )
        (cons elemento lista)
        (cons (first lista)
@@ -106,7 +107,7 @@
 
 (de admisibles (lista heuristica &aux (admisibilidad (first heuristica)))
    (if lista
-       (if (admisibilidad (first lista))
+       (if (funcall admisibilidad (first lista))
            (cons (first lista) (admisibles (rest lista) heuristica))
            (admisibles (rest lista) heuristica)
        )

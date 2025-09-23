@@ -9,34 +9,34 @@
 
  ; (load "uticla")     necesita: renombrar-anonima
 
+(defvar gensym-registry (make-hash-table :test #'eq))
+
+(de inicializar-gensym ()
+   (clrhash gensym-registry)
+)
+
+(de extraer-raiz (simbolo)
+   (let* ((nombre (pname simbolo))
+          (posicion (string-search nombre #\_)))
+     (insert (if posicion
+                 (substring nombre 1 (sub1 posicion))
+                 nombre)))
+)
+
+(de proximo-nombre (simbolo)
+   (let* ((raiz (extraer-raiz simbolo))
+          (contador (gethash raiz gensym-registry 0))
+          (nuevo (add1 contador)))
+     (setf (gethash raiz gensym-registry) nuevo)
+     (insert (string raiz #\_ nuevo)))
+)
+
+(de gensym (simbolo)
+   (proximo-nombre simbolo)
+)
+
 (de renombrar (expresion &aux (variables (hallar-variables expresion)))
-   (aplicar (map-2-ar list variables (mapcar gensym variables)) expresion)
-)
-
-(de gensym (simbolo &aux (raiz (extraer-raiz simbolo)) posicion)
-   (if (setq posicion (memvec raiz vector-raices))
-       (insert (string raiz \_ ( (store vector-numeros
-                                        posicion
-                                        (add1 (vector-numeros posicion))
-                                 )
-                                 posicion
-                               )
-               )
-        )
-        (setq vector-raices (vector vector-raices simbolo))
-        (setq vector-numeros (vector vector-numeros 1))
-        (insert (string simbolo \_ 1))
-    )
-)
-
-(de extraer-raiz (simbolo &aux (hilera (pname simbolo))
-                               (posicion (string-search hilera \_))
-                 )
-   (insert (if posicion
-               (substring hilera 1 (sub1 posicion))
-               hilera
-           )
-   )
+   (aplicar (map-2-ar #'list variables (mapcar #'gensym variables)) expresion)
 )
 
 (de hallar-variables (expresion)
@@ -51,21 +51,16 @@
 )
 
 (de hallar-raices (expresion)
-   (mapcar extraer-raiz (hallar-variables expresion))
+   (mapcar #'extraer-raiz (hallar-variables expresion))
 )
 
 (de normalizar (clausulas)
-   (mapcar renombrar (renombrar-anonima clausulas))
-)
-
-(de inicializar-gensym ()
-   (setq vector-raices [])
-   (setq vector-numeros [])
+   (mapcar #'renombrar (renombrar-anonima clausulas))
 )
 
 (de renombrar-anonima (expr)
    (cond
-      ((= expr '?) (gensym '?))
+      ((eq expr '?) (gensym '?))
       ((atom expr) expr)
       (t (cons (renombrar-anonima (first expr))
                (renombrar-anonima (rest expr))
@@ -77,10 +72,9 @@
 (de sacar-anonimas (lista)
    (cond
       ( (null lista) nil )
-      ( (= (extraer-raiz (first lista)) '?) (sacar-anonimas (rest lista)) )
+      ( (eq (extraer-raiz (first lista)) '?) (sacar-anonimas (rest lista)) )
       ( t  (cons (first lista) (sacar-anonimas (rest lista))) )
    )
 )
 
 (print 'renombrar-ok)
-

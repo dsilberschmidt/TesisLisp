@@ -70,7 +70,7 @@
 
 (de map-2-ar (funcion lista1 lista2)
    (if (and lista1 lista2)
-       (cons (funcion (first lista1) (first lista2))
+       (cons (funcall funcion (first lista1) (first lista2))
              (map-2-ar funcion (rest lista1) (rest lista2))
        )
    )
@@ -78,7 +78,7 @@
 
 (de mappend (funcion lista)
    (if lista
-       (append (funcion (first lista))
+       (append (funcall funcion (first lista))
                (mappend funcion (rest lista))
        )
    )

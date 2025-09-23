@@ -29,7 +29,7 @@
 
 (de componer (sust1 sust2)
    (append (aplicar-term sust1 sust2)
-           (pares-nuevos sust1 (mapcar first sust2))
+           (pares-nuevos sust1 (mapcar #'first sust2))
    )
 )
 

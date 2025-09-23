@@ -85,7 +85,7 @@
       (  (atom formula) formula)
       (  (universal formula)
          (setq var (variabilizar (second formula)))
-         (setq sust (map-2-ar list (second formula) var))
+         (setq sust (map-2-ar #'list (second formula) var))
          (sustituir sust (cuantifout (third formula) (append param var)))
       )
       (  (existencial formula)
@@ -132,7 +132,7 @@
        )
        (setq p (disyout (first formula)))
        (setq q (disyout (third formula)))
-       (map-2-ar union p q)
+       (map-2-ar #'union p q)
    )
 )
 

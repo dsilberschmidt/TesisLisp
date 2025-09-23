@@ -29,6 +29,21 @@
 (defun prin2 (x) (princ x))
 (defun print2 (x) (prog1 (princ x) (terpri)))
 
+(defun normalize-flags (flags)
+  (if (and (= (length flags) 1) (listp (first flags)))
+      (first flags)
+      flags))
+
+(defun on (&rest flags)
+  (dolist (flag (normalize-flags flags))
+    (set flag t))
+  t)
+
+(defun off (&rest flags)
+  (dolist (flag (normalize-flags flags))
+    (set flag nil))
+  nil)
+
 (defun make-bracket (items)
   (let ((vector (coerce items 'vector)))
     (lambda (index)

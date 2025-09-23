@@ -54,7 +54,7 @@
 
 (de fusionar-clausulas (clausulas)
    (if flag-control-fusion
-      (mapcar fusionar clausulas)
+      (mapcar #'fusionar clausulas)
       clausulas
    )
 )

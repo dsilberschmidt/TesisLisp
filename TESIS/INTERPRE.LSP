@@ -20,8 +20,8 @@
        )
        ( 'on     (eval `(on  ,(read))) (interprete base-objeto))
        ( 'off    (eval `(off ,(read))) (interprete base-objeto))
-       ( t       (llamada base-interna goal-interno)
-                 (interprete base-objeto)
+       ( t       (funcall llamada base-interna goal-interno)
+                (interprete base-objeto)
        )
    )
 )
@@ -51,7 +51,7 @@
                       (variables (sacar-anonimas (hallar-variables goal)))
                )
    (ordenar
-        (normalizar (mapcar armar-clausula
+        (normalizar (mapcar #'armar-clausula
                             (mapcar (lambda (clausula)
                                             (snoc (list variables) clausula)
                                     )
