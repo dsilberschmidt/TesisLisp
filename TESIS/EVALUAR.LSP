@@ -51,7 +51,7 @@
 )
 
 (de pertenece-vacia-bis (clausulas &aux (clausula (first clausulas)))
-   (and clausulas (null (first clausula)) (null (second clausula))))
+   (and clausulas (null (first clausula)) (null (second clausula)))
 )
 
-(print 'evaluar-ok)
+(print 'evaluar-ok)

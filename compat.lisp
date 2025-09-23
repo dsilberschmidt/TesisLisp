@@ -3,8 +3,9 @@
 ;; --- Lector: [a b c] => (a b c)
 (set-macro-character #\[
   (lambda (s c) (declare (ignore c))
-    (let ((lst (read-delimited-list #\] s t))) lst)))
-(set-macro-character #\] (get-macro-character #\)))
+    (let ((lst (read-delimited-list #\] s t)))
+      `(compat::make-bracket ',lst))))
+(set-macro-character #\] (get-macro-character #\]))
 
 ;; --- Azúcares y utilidades del dialecto
 
@@ -21,15 +22,19 @@
                      (t (cons h (fix tail))))))))
     `(defun ,name ,(fix args) ,@body)))
 
-(defmacro on  (var) `(setf ,var t))
-(defmacro off (var) `(setf ,var nil))
-
 (defun <> (a b) (not (equal a b)))
 (defun sub1 (x) (1- x))
 (defun restn (lst &optional (n 1)) (nthcdr n lst))
 (defun append+ (&rest lists) (apply #'append lists))
 (defun prin2 (x) (princ x))
 (defun print2 (x) (prog1 (princ x) (terpri)))
+
+(defun make-bracket (items)
+  (let ((vector (coerce items 'vector)))
+    (lambda (index)
+      (when (or (<= index 0) (> index (length vector)))
+        (error "Index ~A out of range for bracket literal" index))
+      (elt vector (1- index)))))
 
 ;; selectq: como CASE con claves símbolo
 (defmacro selectq (key &body clauses)

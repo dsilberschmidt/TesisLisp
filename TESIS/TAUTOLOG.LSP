@@ -20,4 +20,3 @@
 )
 
 (print 'tautologia-ok)
-

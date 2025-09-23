@@ -1,11 +1,11 @@
 
- ; uticla contiene: skolemizar, variabilizar, chequear-variable,
- ;                  sustituir, conjuncion, disyuncion, negacion,
- ;                  universal, existencial, largo, vtol, ltov, ltov1
+; uticla contiene: skolemizar, variabilizar, chequear-variable,
+;                  sustituir, conjuncion, disyuncion, negacion,
+;                  universal, existencial, largo, vtol, ltov, ltov1
 
- ; (load "unificar")   necesita: valor, variablep
+; (load "unificar")   necesita: valor, variablep
 
- ; (load "renombrar")  necesita: gensym
+; (load "renombrar")  necesita: gensym
 
 (de skolemizar (existenciales universales)
    (mapcar (lambda (x) (list x (cons (gensym 'sk) universales)))
@@ -37,23 +37,23 @@
 )
 
 (de conjuncion (formula)
-   (and (= (largo formula) 3) (= (second formula) 'and))
+   (and (= (largo formula) 3) (eq (second formula) 'and))
 )
 
 (de disyuncion (formula)
-   (and (= (largo formula) 3) (= (second formula) 'or))
+   (and (= (largo formula) 3) (eq (second formula) 'or))
 )
 
 (de negacion (formula)
-   (and (= (largo formula) 2) (= (first formula) 'not))
+   (and (= (largo formula) 2) (eq (first formula) 'not))
 )
 
 (de universal (formula)
-   (and (= (largo formula) 3) (= (first formula) 'paratodo))
+   (and (= (largo formula) 3) (eq (first formula) 'paratodo))
 )
 
 (de existencial (formula)
-   (and (= (largo formula) 3) (= (first formula) 'existe))
+   (and (= (largo formula) 3) (eq (first formula) 'existe))
 )
 
 (de largo (lista)
@@ -64,25 +64,24 @@
 
 (de vtol (expr)
    (cond
-       ( (vectorp expr)
-         (do ( (posicion (length expr) (sub1 posicion))
-               (lista  nil (list 'cons (vtol (expr posicion)) lista))
-             )
-             ( ( (< posicion 1) lista) )
-         )
+       ((vectorp expr)
+        (do ((posicion (length expr) (sub1 posicion))
+             (lista nil (list 'cons (vtol (expr posicion)) lista)))
+            ((< posicion 1) lista)
+        )
        )
-       ( (atom expr) expr)
-       ( t (cons (vtol (first expr)) (vtol (rest expr))))
+       ((atom expr) expr)
+       (t (cons (vtol (first expr)) (vtol (rest expr))))
    )
 )
 
 (de ltov (expr)
    (cond
-      (  (atom expr) expr)
-      (  (and (= (length expr) 3)
-              (= (first expr) 'cons)
-         )
-         (ltov1 expr)
+      ((atom expr) expr)
+      ((and (= (length expr) 3)
+            (eq (first expr) 'cons)
+       )
+       (ltov1 expr)
       )
       (t (cons (ltov (first expr)) (ltov (rest expr))))
    )
@@ -90,11 +89,10 @@
 
 (de ltov1 (expr)
    (cond
-      (  (null expr) '[])
-      (  (atom expr) (vector '| expr))
+      ((null expr) #())
+      ((atom expr) (vector '| expr))
       (t (vector (newvector 1 (ltov (second expr))) (ltov1 (third expr))))
    )
 )
 
 (print 'uticla-ok)
-

@@ -20,4 +20,3 @@
 (load "evaluar")
 (terpri)
 (print 'LGC-ok)
-

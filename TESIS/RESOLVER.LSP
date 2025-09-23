@@ -57,4 +57,4 @@
    (add1 (max (sixth clausula1) (sixth clausula2)))
 )
 
-(print 'resolver-ok)
+(print 'resolver-ok)

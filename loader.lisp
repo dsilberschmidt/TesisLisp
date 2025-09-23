@@ -39,6 +39,11 @@
 (defun snoc (x lst) (cl:append lst (cl:list x)))
 (defun pertenece (x lst) (cl:member x lst :test #'cl:equal))
 
+;; Tipos aliasados al dialecto original
+(deftype list () 'cl:list)
+(deftype string () 'cl:string)
+(deftype vector () 'cl:vector)
+
 ;; PNAME (lista de códigos)
 (defun pname (x)
   (cl:map 'cl:string #'cl:char-code
@@ -55,9 +60,33 @@
 ;; Vars heredadas que aparecen MUY temprano
 (defparameter || nil)
 (defparameter ?  (cl:char-code #\?))
+(defparameter _  (cl:char-code #\_))
+(defparameter | | (cl:char-code #\Space))
+(defparameter |:| (cl:char-code #\:))
+(defparameter |1| (cl:char-code #\1))
+(defparameter |2| (cl:char-code #\2))
+(defparameter |l| (cl:char-code #\l))
+(defparameter |r| (cl:char-code #\r))
+(defparameter |v| (cl:char-code #\v))
+(defparameter |s| (cl:char-code #\s))
+(defparameter |n| (cl:char-code #\n))
 
 ;; LIST “por nombre” en (MAP-2-AR LIST ...)
 (defparameter list #'cl:list)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (setf (cl:fdefinition 'list) #'cl:list))
+
+;; Flags globales iniciales
+(defparameter flag-control-tautologia nil)
+(defparameter flag-control-fusion nil)
+(defparameter flag-control-subsuncion nil)
+(defparameter flag-monitor nil)
+(defparameter flag-interrupcion nil)
+(defparameter flag-reciclaje nil)
+(defparameter flag-filtrado-ancestros nil)
+(defparameter limite-profundidad nil)
+(defparameter i nil)
+(defparameter c nil)
 
 ;; STRING del dialecto: concatena símbolos/strings/char-codes/listas de codes/etc.
 (defun string (&rest parts)
@@ -69,7 +98,7 @@
                       ((cl:characterp p) (cl:string p))
                       ((cl:integerp p) (cl:string (cl:code-char p)))
                       ((and (cl:listp p) (every #'cl:integerp p))
-                       (cl:map 'cl:string #'cl:code-char (coerce p 'vector)))
+                       (cl:map 'cl:string #'cl:code-char (cl:coerce p 'cl:vector)))
                       (t (princ-to-string p))))
                   parts)))
     (apply #'cl:concatenate 'cl:string pieces)))
@@ -78,8 +107,8 @@
 (defun vector (&rest args)
   (if (and args (cl:vectorp (first args)))
       (let ((vec (first args))
-            (more (rest args)))
-        (cl:concatenate 'vector vec (coerce more 'vector)))
+            (more (cl:rest args)))
+        (cl:concatenate 'cl:vector vec (cl:coerce more 'cl:vector)))
       (apply #'cl:vector args)))
 
 ;; Emulación array-funcall (MacLisp):
@@ -100,24 +129,145 @@
   (cl:intern name (find-package :tesis)))
 
 ;; Macro DF (ON/OFF de banderas)
-(defmacro df (fn (flags) &body _)
-  (declare (ignore _))
-  (let ((tmp (cl:gensym "FLAGS")))
-    `(cl:let ((,tmp ,flags))
-       (cl:mapc (cl:function
-                 (cl:lambda (flag)
-                   (cl:set flag ,(cl:cond
-                                   ((cl:eq fn 'compat:on) t)
-                                   ((cl:eq fn 'compat:off) nil)
-                                   (t nil)))))
-                ,tmp))))
+(defmacro df (name (flags) &body body)
+  (let ((rest (cl:gensym "ARGS")))
+    `(defun ,name (&rest ,rest)
+       (let ((,flags (if (and ,rest (cl:listp (car ,rest)) (null (cdr ,rest)))
+                         (car ,rest)
+                         ,rest)))
+         ,@body))))
+
+;; Iterador REP del dialecto (repite N veces el cuerpo)
+(defmacro rep (count &body body)
+  (let ((i (cl:gensym "REP")))
+    `(cl:dotimes (,i ,count)
+       ,@body)))
+
+;; Concatenación de varias listas (como append+ pero nombre original)
+(defun concat+ (&rest lists)
+  (apply #'cl:append lists))
+
+;; String de longitud N con caracter dado
+(defun newstring (length char-code)
+  (cl:make-string length :initial-element (cl:code-char char-code)))
+
+;; Reemplazo de SUBSTRING y búsquedas
+(defun string-search (string char-code)
+  (cl:position (cl:code-char char-code) string))
+
+(defun substring (string start end)
+  (cl:subseq string (cl:1- start) end))
+
+;; Vector con longitud e inicialización
+(defun newvector (length element)
+  (make-array length :initial-element element))
+
+;; Lectura de caracter desde consola (retorna código ASCII)
+(defun console-in ()
+  (labels ((next-char ()
+             (let ((ch (cl:read-char cl:*standard-input* nil nil)))
+               (cond
+                 ((null ch) #\Space)
+                 ((cl:member ch '(#\Newline #\Return #\Linefeed)) (next-char))
+                 (t ch)))))
+    (cl:char-code (next-char))))
+
+;; --- Implementaciones trasladadas de UTICLA.LSP ---
+
+(de skolemizar (existenciales universales)
+   (mapcar (lambda (x) (list x (cons (gensym 'sk) universales)))
+           existenciales
+   )
+)
+
+(de variabilizar (universales)
+   (mapcar (lambda (x) (gensym (chequear-variable x)))
+           universales
+   )
+)
+
+(de chequear-variable (x)
+   (if (variablep x)
+       x
+       (insert (string \? x))
+   )
+)
+
+(de sustituir (sust expr)
+   (cond
+      ((atom expr) (valor sust expr))
+      (t (cons (sustituir sust (first expr))
+               (sustituir sust (rest expr))
+         )
+      )
+   )
+)
+
+(de conjuncion (formula)
+   (and (= (largo formula) 3) (eq (second formula) 'and))
+)
+
+(de disyuncion (formula)
+   (and (= (largo formula) 3) (eq (second formula) 'or))
+)
+
+(de negacion (formula)
+   (and (= (largo formula) 2) (eq (first formula) 'not))
+)
+
+(de universal (formula)
+   (and (= (largo formula) 3) (eq (first formula) 'paratodo))
+)
+
+(de existencial (formula)
+   (and (= (largo formula) 3) (eq (first formula) 'existe))
+)
+
+(de largo (lista)
+   (if (listp lista)
+       (length lista)
+   )
+)
+
+(de vtol (expr)
+   (cond
+       ((vectorp expr)
+        (do ((posicion (length expr) (sub1 posicion))
+             (lista nil (list 'cons (vtol (expr posicion)) lista)))
+            ((< posicion 1) lista)
+        )
+       )
+       ((atom expr) expr)
+       (t (cons (vtol (first expr)) (vtol (rest expr))))
+   )
+)
+
+(de ltov (expr)
+   (cond
+      ((atom expr) expr)
+      ((and (= (length expr) 3)
+            (eq (first expr) 'cons)
+       )
+       (ltov1 expr)
+      )
+      (t (cons (ltov (first expr)) (ltov (rest expr))))
+   )
+)
+
+(de ltov1 (expr)
+   (cond
+      ((null expr) #())
+      ((atom expr) (vector '| expr))
+      (t (vector (newvector 1 (ltov (second expr))) (ltov1 (third expr))))
+   )
+)
 
 ;; 6) Compilar primero (detecta issues temprano)
 (mapc #'cl:compile-file
       '("TESIS/UTI.LSP" "TESIS/UNIFICAR.LSP" "TESIS/RENOMBRA.LSP" "TESIS/RESOLVER.LSP"
         "TESIS/TAUTOLOG.LSP" "TESIS/FUSION.LSP" "TESIS/SUBSUME.LSP" "TESIS/MONITOR.LSP"
         "TESIS/ESTRATEG.LSP" "TESIS/RESPUES.LSP" "TESIS/BUSQUEDA.LSP" "TESIS/INICIAL.LSP"
-        "TESIS/INTERPRE.LSP" "TESIS/UTICLA.LSP" "TESIS/CLAUSAL.LSP" "TESIS/RECICLAR.LSP"
+        "TESIS/INTERPRE.LSP" "TESIS/CLAUSAL.LSP" "TESIS/RECICLAR.LSP"
         "TESIS/EVALUAR.LSP" "TESIS/LGC.LSP"))
 
 ;; 7) Cargar FASL
@@ -125,7 +275,7 @@
       '("TESIS/UTI.fasl" "TESIS/UNIFICAR.fasl" "TESIS/RENOMBRA.fasl" "TESIS/RESOLVER.fasl"
         "TESIS/TAUTOLOG.fasl" "TESIS/FUSION.fasl" "TESIS/SUBSUME.fasl" "TESIS/MONITOR.fasl"
         "TESIS/ESTRATEG.fasl" "TESIS/RESPUES.fasl" "TESIS/BUSQUEDA.fasl" "TESIS/INICIAL.fasl"
-        "TESIS/INTERPRE.fasl" "TESIS/UTICLA.fasl" "TESIS/CLAUSAL.fasl" "TESIS/RECICLAR.fasl"
+        "TESIS/INTERPRE.fasl" "TESIS/CLAUSAL.fasl" "TESIS/RECICLAR.fasl"
         "TESIS/EVALUAR.fasl" "TESIS/LGC.fasl"))
 
 (cl:format t "~&LGC cargado.~%")

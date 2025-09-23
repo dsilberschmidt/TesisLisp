@@ -22,7 +22,7 @@
 )
 
 (de restriccion-fusion (clausula)
-   (or (= (seventh clausula) 'fusion)
+   (or (eq (seventh clausula) 'fusion)
        (= (sixth clausula) 0)
    )
 )
@@ -40,9 +40,8 @@
 (de ancestro (clausula1 clausula2)
    (and clausula2
         (or clausula1 clausula2)
-            (ancestro clausula1 (fourth clausula2))
-            (ancestro clausula1 (fifth clausula2))
-        )
+        (ancestro clausula1 (fourth clausula2))
+        (ancestro clausula1 (fifth clausula2))
    )
 )
 
@@ -62,8 +61,12 @@
 )
  ; tipos de prioridad
 
-(setq horizontal <)
+(de horizontal (a b)
+   (cl:< a b)
+)
 
-(setq vertical <=)
+(de vertical (a b)
+   (cl:<= a b)
+)
 
-(print 'estrategia-ok)
+(print 'estrategia-ok)

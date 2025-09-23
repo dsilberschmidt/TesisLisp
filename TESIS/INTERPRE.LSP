@@ -68,7 +68,6 @@
    (append base (implicar (clausal (list formula))))
 )
 
-(setq i interprete c compilar)
+(setq i #'interprete c #'compilar)
 
 (print 'interprete-ok)
-

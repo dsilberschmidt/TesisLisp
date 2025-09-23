@@ -60,4 +60,3 @@
 )
 
 (print 'fusion-ok)
-

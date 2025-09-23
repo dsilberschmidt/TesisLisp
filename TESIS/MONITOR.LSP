@@ -51,8 +51,13 @@
            (terpri) (pp-clausula (fifth clausula) 0 'v)
            (terpri) (pp-clausula clausula 9 'v)
            (setq tecla
-                 (do ((char (prin2 "Opcion (1, 2, V, Q):") (console-in)))
-                     (((pertenece char '(\1 \2 \v \q)) (print char)))
+                 (loop
+                    (prin2 "Opcion (1, 2, V, Q):")
+                    (let ((char (console-in)))
+                       (when (pertenece char (list |1| |2| |v| |q|))
+                          (print char)
+                          (return char))
+                    )
                  )
            )
            (if (selectq tecla
@@ -70,11 +75,14 @@
 
 (de interrupcion ()
    (if flag-interrupcion
-       (do ((char (prin2 "Interrupcion:") (console-in)))
-           (((= char \ ) (print2 "cont")))
-           (if (<> (shell char) 'nada)
-               (prin2 "Interrupcion:")
-           )
+       (loop
+          (prin2 "Interrupcion:")
+          (let ((char (console-in)))
+             (when (= char | |)
+                (print2 "cont")
+                (return))
+             (when (<> (shell char) 'nada)
+                nil))
        )
    )
 )
@@ -88,4 +96,3 @@
 )
 
 (print 'monitor-ok)
-

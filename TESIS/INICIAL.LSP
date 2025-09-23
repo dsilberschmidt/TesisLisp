@@ -1,6 +1,10 @@
 
  ; inicial contiene: inicializacion, seth, on, on
 
+(de seleccionar (indice &rest opciones)
+   (cl:nth (sub1 indice) opciones)
+)
+
 (de inicializacion ()
    (inicializar-gensym)
    (setq nro-clausulas 0)
@@ -12,17 +16,17 @@
    (on  flag-interrupcion)
    (on  flag-reciclaje)
 
-   (setq llamada (eval ([soporte ancho] 1)))
+   (setq llamada (seleccionar 1 #'soporte #'ancho))
 
-   (setq admisibilidad-1 (eval ([sin-restriccion] 1)))
-   (setq funcion-h-1 (eval ([constante menores unidades] 3)))
-   (setq prioridad-1 (eval ([vertical horizontal] 2)))
+   (setq admisibilidad-1 (seleccionar 1 #'sin-restriccion))
+   (setq funcion-h-1 (seleccionar 3 #'constante #'menores #'unidades))
+   (setq prioridad-1 (seleccionar 2 #'vertical #'horizontal))
 
    (setq admisibilidad-2
-         (eval ([sin-restriccion entrada-lineal restriccion-fusion] 1))
+         (seleccionar 1 #'sin-restriccion #'entrada-lineal #'restriccion-fusion)
    )
-   (setq funcion-h-2 (eval ([constante menores unidades] 1)))
-   (setq prioridad-2 (eval ([vertical horizontal] 2)))
+   (setq funcion-h-2 (seleccionar 1 #'constante #'menores #'unidades))
+   (setq prioridad-2 (seleccionar 2 #'vertical #'horizontal))
 
    (seth)
 
@@ -54,4 +58,4 @@
 
 (inicializacion)
 
-(print 'inicial-ok)
+(print 'inicial-ok)
