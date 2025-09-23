@@ -172,102 +172,12 @@
                  (t ch)))))
     (cl:char-code (next-char))))
 
-;; --- Implementaciones trasladadas de UTICLA.LSP ---
-
-(de skolemizar (existenciales universales)
-   (mapcar (lambda (x) (list x (cons (gensym 'sk) universales)))
-           existenciales
-   )
-)
-
-(de variabilizar (universales)
-   (mapcar (lambda (x) (gensym (chequear-variable x)))
-           universales
-   )
-)
-
-(de chequear-variable (x)
-   (if (variablep x)
-       x
-       (insert (string \? x))
-   )
-)
-
-(de sustituir (sust expr)
-   (cond
-      ((atom expr) (valor sust expr))
-      (t (cons (sustituir sust (first expr))
-               (sustituir sust (rest expr))
-         )
-      )
-   )
-)
-
-(de conjuncion (formula)
-   (and (= (largo formula) 3) (eq (second formula) 'and))
-)
-
-(de disyuncion (formula)
-   (and (= (largo formula) 3) (eq (second formula) 'or))
-)
-
-(de negacion (formula)
-   (and (= (largo formula) 2) (eq (first formula) 'not))
-)
-
-(de universal (formula)
-   (and (= (largo formula) 3) (eq (first formula) 'paratodo))
-)
-
-(de existencial (formula)
-   (and (= (largo formula) 3) (eq (first formula) 'existe))
-)
-
-(de largo (lista)
-   (if (listp lista)
-       (length lista)
-   )
-)
-
-(de vtol (expr)
-   (cond
-       ((vectorp expr)
-        (do ((posicion (length expr) (sub1 posicion))
-             (lista nil (list 'cons (vtol (expr posicion)) lista)))
-            ((< posicion 1) lista)
-        )
-       )
-       ((atom expr) expr)
-       (t (cons (vtol (first expr)) (vtol (rest expr))))
-   )
-)
-
-(de ltov (expr)
-   (cond
-      ((atom expr) expr)
-      ((and (= (length expr) 3)
-            (eq (first expr) 'cons)
-       )
-       (ltov1 expr)
-      )
-      (t (cons (ltov (first expr)) (ltov (rest expr))))
-   )
-)
-
-(de ltov1 (expr)
-   (cond
-      ((null expr) #())
-      ((atom expr) (vector '| expr))
-      (t (vector (newvector 1 (ltov (second expr))) (ltov1 (third expr))))
-   )
-)
-
 ;; 6) Compilar primero (detecta issues temprano)
 (mapc #'cl:compile-file
       '("TESIS/UTI.LSP" "TESIS/UNIFICAR.LSP" "TESIS/RENOMBRA.LSP" "TESIS/RESOLVER.LSP"
         "TESIS/TAUTOLOG.LSP" "TESIS/FUSION.LSP" "TESIS/SUBSUME.LSP" "TESIS/MONITOR.LSP"
         "TESIS/ESTRATEG.LSP" "TESIS/RESPUES.LSP" "TESIS/BUSQUEDA.LSP" "TESIS/INICIAL.LSP"
-        "TESIS/INTERPRE.LSP" "TESIS/CLAUSAL.LSP" "TESIS/RECICLAR.LSP"
+        "TESIS/INTERPRE.LSP" "TESIS/UTICLA.LSP" "TESIS/CLAUSAL.LSP" "TESIS/RECICLAR.LSP"
         "TESIS/EVALUAR.LSP" "TESIS/LGC.LSP"))
 
 ;; 7) Cargar FASL
@@ -275,7 +185,7 @@
       '("TESIS/UTI.fasl" "TESIS/UNIFICAR.fasl" "TESIS/RENOMBRA.fasl" "TESIS/RESOLVER.fasl"
         "TESIS/TAUTOLOG.fasl" "TESIS/FUSION.fasl" "TESIS/SUBSUME.fasl" "TESIS/MONITOR.fasl"
         "TESIS/ESTRATEG.fasl" "TESIS/RESPUES.fasl" "TESIS/BUSQUEDA.fasl" "TESIS/INICIAL.fasl"
-        "TESIS/INTERPRE.fasl" "TESIS/CLAUSAL.fasl" "TESIS/RECICLAR.fasl"
+        "TESIS/INTERPRE.fasl" "TESIS/UTICLA.fasl" "TESIS/CLAUSAL.fasl" "TESIS/RECICLAR.fasl"
         "TESIS/EVALUAR.fasl" "TESIS/LGC.fasl"))
 
 (cl:format t "~&LGC cargado.~%")

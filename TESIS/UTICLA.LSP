@@ -22,7 +22,7 @@
 (de chequear-variable (x)
    (if (variablep x)
        x
-       (insert (string \? x))
+       (insert (string #\? x))
    )
 )
 
@@ -33,6 +33,12 @@
                (sustituir sust (rest expr))
          )
       )
+   )
+)
+
+(de largo (lista)
+   (if (listp lista)
+       (length lista)
    )
 )
 
@@ -56,43 +62,22 @@
    (and (= (largo formula) 3) (eq (first formula) 'existe))
 )
 
-(de largo (lista)
-   (if (listp lista)
-       (length lista)
-   )
-)
-
 (de vtol (expr)
    (cond
        ((vectorp expr)
-        (do ((posicion (length expr) (sub1 posicion))
-             (lista nil (list 'cons (vtol (expr posicion)) lista)))
-            ((< posicion 1) lista)
-        )
-       )
+        (loop for i from 0 below (length expr)
+              collect (vtol (aref expr i))))
        ((atom expr) expr)
        (t (cons (vtol (first expr)) (vtol (rest expr))))
    )
 )
 
 (de ltov (expr)
-   (cond
-      ((atom expr) expr)
-      ((and (= (length expr) 3)
-            (eq (first expr) 'cons)
-       )
-       (ltov1 expr)
-      )
-      (t (cons (ltov (first expr)) (ltov (rest expr))))
-   )
+   expr
 )
 
 (de ltov1 (expr)
-   (cond
-      ((null expr) #())
-      ((atom expr) (vector '| expr))
-      (t (vector (newvector 1 (ltov (second expr))) (ltov1 (third expr))))
-   )
+   expr
 )
 
 (print 'uticla-ok)
