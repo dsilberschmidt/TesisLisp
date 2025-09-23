@@ -25,9 +25,9 @@
 
 ;; 4) Macro IF (MacLisp): (if TEST THEN . ELSE-FORMS)
 (defmacro if (test then &rest else-forms)
-  (if else-forms
-      `(cl:if ,test ,then (cl:progn ,@else-forms))
-      `(cl:if ,test ,then)))
+  (cl:if else-forms
+         `(cl:if ,test ,then (cl:progn ,@else-forms))
+         `(cl:if ,test ,then)))
 
 ;; 5) Prelude de compatibilidad (antes de compilar .LSP)
 (defun rest (lst &optional (n 1)) (cl:nthcdr n lst))
