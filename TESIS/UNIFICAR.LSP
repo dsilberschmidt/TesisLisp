@@ -16,7 +16,7 @@
 (de valor (sust var)
    (cond
       ((null sust) var)
-      ((= (first (first sust)) var) (second (first sust)))
+      ((equal (first (first sust)) var) (second (first sust)))
       (t (valor (rest sust) var))
    )
 )
@@ -53,7 +53,7 @@
 
 (de ocurre (var expr)
    (if (atom expr)
-       (= var expr)
+       (equal var expr)
        (or (ocurre var (first expr))
            (ocurre var (rest  expr))
        )
@@ -62,7 +62,7 @@
 
 (de unificar (literal1 literal2 &aux unif1 unif2)
   (cond
-     ( (= literal1 literal2) nil)
+     ( (equal literal1 literal2) nil)
      ( (and (variablep literal1) (not (ocurre literal1 literal2)))
                                  (list (list literal1 literal2))
      )
