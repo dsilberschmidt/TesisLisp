@@ -54,7 +54,10 @@
 (defun nth (lst n)
   (etypecase lst
     (list (cl:nth n lst))
-    (string (cl:char-code (cl:char lst n)))))
+    (string (and (cl:integerp n)
+                 (<= 1 n)
+                 (<= n (cl:length lst))
+                 (cl:char-code (cl:char lst (cl:1- n)))))))
 
 ;; Vars heredadas que aparecen MUY temprano
 (defparameter || nil)
@@ -165,7 +168,10 @@
 
 ;; Reemplazo de SUBSTRING y búsquedas
 (defun string-search (string char-code)
-  (cl:position (cl:code-char char-code) string))
+  (cl:position (if (cl:characterp char-code)
+                   char-code
+                   (cl:code-char char-code))
+               string))
 
 (defun substring (string start end)
   (cl:subseq string (cl:1- start) end))
