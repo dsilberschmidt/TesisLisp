@@ -40,13 +40,13 @@
 )
 
 (de hallar-variables (expresion)
-   (if (variablep expresion)
-       (list expresion)
-       (if (listp expresion)
-           (union (hallar-variables (first expresion))
-                  (hallar-variables (rest expresion))
-           )
-       )
+   (cond
+      ((null expresion) nil)
+      ((variablep expresion) (list expresion))
+      ((listp expresion)
+       (union (hallar-variables (first expresion))
+              (hallar-variables (rest expresion))))
+      (t nil)
    )
 )
 
