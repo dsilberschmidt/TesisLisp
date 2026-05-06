@@ -6,7 +6,7 @@
    (monitor expandidas expandibles)
    (interrupcion)
    (if expandibles
-       (if (pertenece-vacia-bis
+       (if (pertenece-vacia
                (setq resolventes
                      (if (not (tope-profundidad (first expandibles)))
                          (generar-resolventes-bis expandidas expandibles)
