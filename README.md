@@ -6,19 +6,14 @@ Repository: https://github.com/dsilberschmidt/TesisLisp
 
 ## Status
 
-Current work focuses on:
+The original 1989 sources run **unmodified** on SBCL. `TESIS/` is byte-identical
+to the first commit of the code (2020-05-10, `fca8f52`); everything needed to
+bridge the historical dialect (likely TLC-LISP) to SBCL lives in `loader.lisp`.
 
-- recovering historical behavior
-- restoring compatibility with modern Common Lisp implementations
-- documenting the architecture
-- building regression tests
-- understanding the original inference strategy before modifying semantics
-
-Main active branch for historical debugging:
-
-```text
-rescue-historical-dama1
-```
+`./run-tests.sh` checks 56 queries: every atom of the propositional problems
+(dama1-7, presidente1-2, transil1-2), verified against an independent
+model-checking oracle (`oraculo.py`), plus first-order queries with answer
+extraction (append, pert, reverse).
 
 ## Historical Context
 
@@ -44,37 +39,12 @@ The codebase preserves many characteristics of the original dialect and style:
 
 The current reconstruction attempts to preserve those semantics as faithfully as possible.
 
-## Current Implementations Tested
+## Dialect bridge (`loader.lisp`)
 
-### SBCL
-
-Primary current target.
-
-Working:
-
-- loader
-- parser pipeline
-- clausal transformation
-- basic resolution
-- simple evaluation examples
-- Dama1 compilation
-
-Still under investigation:
-
-- historical search behavior
-- infinite frontier expansion in some examples
-- dynamic scoping assumptions from the original environment
-- compatibility semantics between historical Lisp and ANSI Common Lisp
-
-### CLISP
-
-Exploratory branch planned.
-
-Goal:
-
-- compare runtime behavior with a more permissive historical Common Lisp implementation
-- use CLISP as a behavioral oracle
-- identify SBCL-specific incompatibilities
+- Reader: `\x` is a character, `[a b c]` a vector, `|` an ordinary symbol, DOS `^Z` is whitespace; stray top-level `)` are ignored, as the original reader did (there are two in the sources).
+- Lisp-1 semantics: functions are values (`(mapcar fusionar l)`, `(setq horizontal <)`), variables and vectors can be called (`(funcion x)`, `([a b] 1)`). A code walker rewrites each `de` at load time.
+- 1-based `nth`/`substring`/`string-search`/`memvec`; generic `=` (a character equals its code); `do` with cond-style exit clauses; MacLisp `if`; `df` fexprs (`on`/`off`); `print` breaks the line after printing.
+- Lists in user input/output use the dialect's vector notation: answers print as `?Z=[A B]`.
 
 ## Repository Structure
 
@@ -132,40 +102,26 @@ Goal evaluation using resolution.
 
 Interactive interpreter.
 
-## Example
+## Usage
 
-Compile and test one of the historical examples:
-
-```bash
-cd ~/Proyectos/TesisLisp && sbcl --load loader.lisp \
-  --eval "(in-package :tesis)" \
-  --load PROBLEMA/FUENTES.LSP \
-  --eval "(compilar dama1 'objeto-dama1)" \
-  --eval "(setq base-interna (armar-clausulas objeto-dama1))" \
-  --eval "(setq goal-interno (armar-goal '(hay habitacion1 dama)))" \
-  --eval "(format t \"~%eval => ~S~%\" (evaluar base-interna goal-interno))" \
-  --quit
-```
-
-## Current Investigation
-
-One of the main current goals is understanding why some historically solvable examples generate unbounded frontier growth under SBCL.
-
-Current hypotheses include:
-
-- differences in dynamic vs lexical scoping
-- historical macro semantics
-- equality semantics
-- ordering/subsumption interactions
-- compatibility behavior of utility functions
-- implementation differences in old Lisp systems
-
-The project currently prioritizes:
+Interactive, as in 1989:
 
 ```text
-understanding historical semantics first,
-modifying algorithms second
+$ sbcl --load loader.lisp --eval '(tlc::lgc)'
+> (load "PROBLEMA/FUENTES.LSP")
+> (c app)
+> (i)
+?-(append ?x ?y [a b])
+?X=NIL
+?Y=[A B]
+Mas (s/n)?
 ```
+
+`(off flag-monitor flag-interrupcion)` disables the step-by-step monitor
+(on by default; press space to continue). `exit` leaves the interpreter,
+`(quit)` the toplevel.
+
+Regression: `./run-tests.sh` (about 20 s).
 
 ## Philosophy of the Port
 

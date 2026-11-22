@@ -79,14 +79,14 @@ transil2|(pepe es humano)|8|Si.
 transil2|(pepe es vampiro)|8|No hay (mas) respuestas
 transil2|(pepe esta cuerdo)|8|No hay (mas) respuestas
 transil2|(pepe esta loco)|8|Si.
-app|(append (cons a nil) (cons b nil) ?z)|8|?Z= [A B]
-app|(append ?x ?y (cons a (cons b nil)))|8|?Y= [A B]
+app|(append (cons a nil) (cons b nil) ?z)|8|?Z=[A B]
+app|(append ?x ?y (cons a (cons b nil)))|8|?Y=[A B]
 pert|(b pert (cons a (cons b nil)))|8|Si.
-pert|(?x pert (cons a (cons b nil)))|8|?X= A
-rev|(reverse (cons a (cons b nil)) ?r)|8|?R= [B A]
-rev|(reverse (cons a (cons b (cons c nil))) ?r)|12|?R= [C B A]
-app|(append [a] [b] ?z)|8|?Z= [A B]
-rev|(reverse [a b c] ?r)|12|?R= [C B A]
+pert|(?x pert (cons a (cons b nil)))|8|?X=A
+rev|(reverse (cons a (cons b nil)) ?r)|8|?R=[B A]
+rev|(reverse (cons a (cons b (cons c nil))) ?r)|12|?R=[C B A]
+app|(append [a] [b] ?z)|8|?Z=[A B]
+rev|(reverse [a b c] ?r)|12|?R=[C B A]
 CASOS
 echo "PASS=$PASS  FAIL=$FAIL"
 [ $FAIL -eq 0 ]

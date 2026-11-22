@@ -15,7 +15,7 @@
 (defpackage :tlc
   (:use :cl)
   (:shadow #:if #:do #:= #:nth #:rest #:last #:union #:gensym #:listp
-           #:string #:vector #:eval))
+           #:string #:vector #:eval #:print))
 (in-package :tlc)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -92,13 +92,20 @@
         (t (error "TLC: no invocable: ~S" f))))
 
 ;; E/S
+;; Convencion del dialecto: PRIN0/PRINT escriben con escapes, PRIN2/PRINT2
+;; sin; las variantes PRINT* cortan la linea DESPUES (no antes como en CL):
+;; (prin2 '?X) (prin2 '=) (print v) => "?X=[A B]" y salto de linea.
+(defun print (x) (prin1 x) (terpri) x)
 (defun prin0 (x) (prin1 x))
 (defun prin2 (x) (princ x))
 (defun print2 (x) (prog1 (princ x) (terpri)))
 (defun print3 (x) (terpri) (princ x))
 (defun console-in ()
   (loop (let ((ch (read-char *standard-input* nil nil)))
-          (cond ((null ch) (return (char-code #\Space)))
+          ;; Fin de entrada (uso no interactivo): terminar limpio. Los bucles
+          ;; de teclado del original (Interrupcion, Mas s/n) no tienen salida
+          ;; para una tecla que nunca llega.
+          (cond ((null ch) (finish-output) (sb-ext:exit :code 0 :abort nil))
                 ((not (member ch '(#\Newline #\Return))) (return (char-code ch)))))))
 
 ;;; ----------------------------------------------------------- formas especiales
@@ -211,3 +218,20 @@
 (dolist (m *modulos*) (load-tlc (format nil "TESIS/~A.LSP" m)))
 
 (format t "~&TLC-ORIG cargado.~%")
+
+;;; ------------------------------------------------------- REPL del dialecto
+;;; (tlc::lgc) abre un toplevel como el de 1989: lee con el lector de TLC y
+;;; evalua con semantica Lisp-1, de modo que (c dama1) y (i) funcionan como
+;;; en la XT. (quit) o fin de entrada para salir.
+(defun lgc ()
+  (let ((*readtable* *tlc-readtable*) (*package* (find-package :tlc)))
+    (loop
+      (format t "~&> ") (finish-output)
+      (let ((f (read-tlc *standard-input*)))
+        (when (or (eq f :eof) (equal f '(quit))) (return 'quit))
+        (handler-case
+            (let ((v (cl:eval (cl:if (and (consp f) (member (car f) '(de df)))
+                                     f
+                                     (sb-walker:walk-form f nil #'lisp1-walk)))))
+              (format t "~&~S" v))
+          (error (e) (format t "~&** error: ~A" e)))))))
