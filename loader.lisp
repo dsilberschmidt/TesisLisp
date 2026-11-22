@@ -118,7 +118,12 @@
                       ((cl:stringp p) p)
                       ((cl:symbolp p) (cl:symbol-name p))
                       ((cl:characterp p) (cl:string p))
-                      ((cl:integerp p) (cl:string (cl:code-char p)))
+                      ;; Entero => sus digitos decimales. En los fuentes los
+                      ;; caracteres son \_ \? (#\_ #\? en el port); el unico
+                      ;; entero que llega aca es el contador de RENOMBRAR
+                      ;; (?X_1, ?X_2...). Como char-code daba nombres con
+                      ;; caracteres de control y desbordaba en busquedas largas.
+                      ((cl:integerp p) (cl:princ-to-string p))
                       ((and (cl:listp p) (every #'cl:integerp p))
                        (cl:map 'cl:string #'cl:code-char (cl:coerce p 'cl:vector)))
                       (t (princ-to-string p))))
@@ -184,11 +189,16 @@
   (cl:make-string length :initial-element (cl:code-char char-code)))
 
 ;; Reemplazo de SUBSTRING y búsquedas
+;; STRING-SEARCH del dialecto: posicion 1-based (como NTH y SUBSTRING sobre
+;; strings). Antes devolvia la posicion 0-based de cl:position: EXTRAER-RAIZ
+;; cortaba un caracter de menos, las raices colapsaban a "?" y al renombrar
+;; un resolvente la variable perdia el "?" (|_|) => dejaba de ser variable.
 (defun string-search (string char-code)
-  (cl:position (if (cl:characterp char-code)
-                   char-code
-                   (cl:code-char char-code))
-               string))
+  (let ((pos (cl:position (if (cl:characterp char-code)
+                              char-code
+                              (cl:code-char char-code))
+                          string)))
+    (if pos (cl:1+ pos) nil)))
 
 (defun substring (string start end)
   (cl:subseq string (cl:1- start) end))
