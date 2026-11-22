@@ -226,19 +226,63 @@
 
 (format t "~&TLC-ORIG cargado.~%")
 
+;;; ------------------------------------------------------------- machete
+(defparameter *ayuda* "
+LGC - Lenguaje de Programacion Logica (tesis 1989)                MACHETE
+------------------------------------------------------------------------
+TOPLEVEL  >
+  (load \"PROBLEMA/FUENTES.LSP\")  carga: dama1..dama7 presidente1/2
+                                  transil1/2 app pert rev
+  (c dama1)     compila una base        (i)      entra al interprete
+  (ayuda)       este machete            (quit)   sale
+
+INTERPRETE  ?-   (las metas van aca, no en el >)
+  (hay habitacion2 dama)   (presidente ?x)   (append ?x ?y [a b])
+  list          muestra la base         add <formula>  agrega a la base
+  on <flag>     off <flag>              lisp     Lisp anidado
+  exit          vuelve al toplevel
+
+TECLAS  (escribir y Enter)
+  Mas (s/n)?     s otra respuesta  n basta  r ver la prueba  l Lisp
+  Interrupcion:  espacio sigue     l Lisp
+  ancestros:     1 padre  2 madre  v volver  q salir
+
+FLAGS  (on por defecto, salvo la ultima)
+  flag-monitor flag-interrupcion flag-control-tautologia
+  flag-control-fusion flag-control-subsuncion flag-reciclaje
+  flag-filtrado-ancestros   (tiene el bug de tipeo de 1989)
+  Sin pausas del monitor: (off flag-interrupcion) antes de (i)
+
+ESTRATEGIA  (desde el >)
+  (setq limite-profundidad 8)          sin limite por defecto
+  (setq llamada ancho)                 anchura; defecto: soporte
+  funcion-h-1: constante menores unidades*   prioridad-1: horizontal* vertical
+  admisibilidad-2: sin-restriccion* entrada-lineal restriccion-fusion
+  ej. (setq funcion-h-1 menores) y luego (seth)       (* = defecto)
+
+BASES PROPIAS
+  and or not -> <-> xor (paratodo (x) ...) (existe (x) ...)  listas [a b c]
+  (setq mia '((paratodo (x) ((humano x) -> (mortal x))) (humano socrates)))
+  (c mia) (i)  ?- (mortal ?quien)
+")
+(defun ayuda () (princ *ayuda*) (values))
+
 ;;; ------------------------------------------------------- REPL del dialecto
 ;;; (tlc::lgc) abre un toplevel como el de 1989: lee con el lector de TLC y
 ;;; evalua con semantica Lisp-1, de modo que (c dama1) y (i) funcionan como
 ;;; en la XT. (quit) o fin de entrada para salir.
 (defun lgc ()
   (let ((*readtable* *tlc-readtable*) (*package* (find-package :tlc)))
+    (format t "~&LGC 1989 - (ayuda) muestra el machete~%")
     (loop
       (format t "~&> ") (finish-output)
       (let ((f (read-tlc *standard-input*)))
         (when (or (eq f :eof) (equal f '(quit))) (return 'quit))
         (handler-case
-            (let ((v (cl:eval (cl:if (and (consp f) (member (car f) '(de df)))
-                                     f
-                                     (sb-walker:walk-form f nil #'lisp1-walk)))))
-              (format t "~&~S" v))
+            (let ((vs (handler-bind ((warning #'muffle-warning))
+                        (multiple-value-list
+                         (cl:eval (cl:if (and (consp f) (member (car f) '(de df)))
+                                         f
+                                         (sb-walker:walk-form f nil #'lisp1-walk)))))))
+              (when vs (format t "~&~S" (car vs))))
           (error (e) (format t "~&** error: ~A" e)))))))

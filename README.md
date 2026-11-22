@@ -107,7 +107,8 @@ Interactive interpreter.
 Interactive, as in 1989:
 
 ```text
-$ sbcl --load loader.lisp --eval '(tlc::lgc)'
+$ ./lgc
+LGC 1989 - (ayuda) muestra el machete
 > (load "PROBLEMA/FUENTES.LSP")
 > (c app)
 > (i)
@@ -117,6 +118,7 @@ $ sbcl --load loader.lisp --eval '(tlc::lgc)'
 Mas (s/n)?
 ```
 
+`(ayuda)` prints the full cheat sheet (commands, keys, flags, strategies).
 `(off flag-monitor flag-interrupcion)` disables the step-by-step monitor
 (on by default; press space to continue). `exit` leaves the interpreter,
 `(quit)` the toplevel.
