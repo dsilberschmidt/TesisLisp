@@ -70,7 +70,7 @@
 
 (de map-2-ar (funcion lista1 lista2)
    (if (and lista1 lista2)
-       (cons (funcall funcion (first lista1) (first lista2))
+       (cons (funcion (first lista1) (first lista2))
              (map-2-ar funcion (rest lista1) (rest lista2))
        )
    )
@@ -78,7 +78,7 @@
 
 (de mappend (funcion lista)
    (if lista
-       (append (funcall funcion (first lista))
+       (append (funcion (first lista))
                (mappend funcion (rest lista))
        )
    )
@@ -119,4 +119,4 @@
 
 (de quit () 'quit)
 
-(print 'uti-ok)
+(print 'uti-ok)

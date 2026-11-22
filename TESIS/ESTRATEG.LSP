@@ -15,17 +15,14 @@
 
  ; tipos de seleccion
 
-(de sin-restriccion (clausula)
-   (declare (ignore clausula))
-   t
-)
+(de sin-restriccion (clausula) t)
 
 (de entrada-lineal (clausula)
    (= (sixth clausula) 0)
 )
 
 (de restriccion-fusion (clausula)
-   (or (eq (seventh clausula) 'fusion)
+   (or (= (seventh clausula) 'fusion)
        (= (sixth clausula) 0)
    )
 )
@@ -43,17 +40,15 @@
 (de ancestro (clausula1 clausula2)
    (and clausula2
         (or clausula1 clausula2)
-        (ancestro clausula1 (fourth clausula2))
-        (ancestro clausula1 (fifth clausula2))
+            (ancestro clausula1 (fourth clausula2))
+            (ancestro clausula1 (fifth clausula2))
+        )
    )
 )
 
  ; tipos de funcion-h
 
-(de constante (clausula)
-   (declare (ignore clausula))
-   0
-)
+(de constante (clausula) 0)
 
 (de menores (clausula)
    (+ (length (first clausula)) (length (second clausula)))
@@ -67,12 +62,8 @@
 )
  ; tipos de prioridad
 
-(de horizontal (a b)
-   (cl:< a b)
-)
+(setq horizontal <)
 
-(de vertical (a b)
-   (cl:<= a b)
-)
+(setq vertical <=)
 
-(print 'estrategia-ok)
+(print 'estrategia-ok)

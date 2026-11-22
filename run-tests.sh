@@ -13,12 +13,12 @@ while IFS='|' read -r base goal limite expect; do
   [ -z "$base" ] && continue
   out=$(echo n | timeout "$TIMEOUT_SECS" sbcl --non-interactive \
       --load loader.lisp \
-      --eval "(in-package :tesis)" \
+      --eval "(in-package :tlc)" \
       --eval "(off flag-monitor flag-interrupcion)" \
-      --load PROBLEMA/FUENTES.LSP \
+      --eval '(load-tlc "PROBLEMA/FUENTES.LSP")' \
       --eval "(compilar $base 'obj-test)" \
       --eval "(setq base-interna (armar-clausulas obj-test))" \
-      --eval "(setq goal-interno (armar-goal '$goal))" \
+      --eval "(setq goal-interno (armar-goal (let ((*readtable* *tlc-readtable*)) (read-from-string \"$goal\"))))" \
       --eval "(setq limite-profundidad $limite)" \
       --eval "(soporte base-interna goal-interno)" 2>&1)
   rc=$?
@@ -79,12 +79,14 @@ transil2|(pepe es humano)|8|Si.
 transil2|(pepe es vampiro)|8|No hay (mas) respuestas
 transil2|(pepe esta cuerdo)|8|No hay (mas) respuestas
 transil2|(pepe esta loco)|8|Si.
-app|(append (cons a nil) (cons b nil) ?z)|8|(CONS A (CONS B NIL))
-app|(append ?x ?y (cons a (cons b nil)))|8|?Y= (CONS A (CONS B NIL))
+app|(append (cons a nil) (cons b nil) ?z)|8|?Z= [A B]
+app|(append ?x ?y (cons a (cons b nil)))|8|?Y= [A B]
 pert|(b pert (cons a (cons b nil)))|8|Si.
-pert|(?x pert (cons a (cons b nil)))|8|A
-rev|(reverse (cons a (cons b nil)) ?r)|8|(CONS B (CONS A NIL))
-rev|(reverse (cons a (cons b (cons c nil))) ?r)|12|(CONS C (CONS B (CONS A NIL)))
+pert|(?x pert (cons a (cons b nil)))|8|?X= A
+rev|(reverse (cons a (cons b nil)) ?r)|8|?R= [B A]
+rev|(reverse (cons a (cons b (cons c nil))) ?r)|12|?R= [C B A]
+app|(append [a] [b] ?z)|8|?Z= [A B]
+rev|(reverse [a b c] ?r)|12|?R= [C B A]
 CASOS
 echo "PASS=$PASS  FAIL=$FAIL"
 [ $FAIL -eq 0 ]

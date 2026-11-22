@@ -16,7 +16,7 @@
 (de valor (sust var)
    (cond
       ((null sust) var)
-      ((equal (first (first sust)) var) (second (first sust)))
+      ((= (first (first sust)) var) (second (first sust)))
       (t (valor (rest sust) var))
    )
 )
@@ -29,7 +29,7 @@
 
 (de componer (sust1 sust2)
    (append (aplicar-term sust1 sust2)
-           (pares-nuevos sust1 (mapcar #'first sust2))
+           (pares-nuevos sust1 (mapcar first sust2))
    )
 )
 
@@ -53,7 +53,7 @@
 
 (de ocurre (var expr)
    (if (atom expr)
-       (equal var expr)
+       (= var expr)
        (or (ocurre var (first expr))
            (ocurre var (rest  expr))
        )
@@ -62,7 +62,7 @@
 
 (de unificar (literal1 literal2 &aux unif1 unif2)
   (cond
-     ( (equal literal1 literal2) nil)
+     ( (= literal1 literal2) nil)
      ( (and (variablep literal1) (not (ocurre literal1 literal2)))
                                  (list (list literal1 literal2))
      )
@@ -85,4 +85,4 @@
   )
 )
 
-(print 'unificar-ok)
+(print 'unificar-ok)

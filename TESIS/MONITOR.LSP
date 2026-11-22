@@ -33,7 +33,7 @@
    (if (pertenece 'v opcion)
        (progn (prin2 "       [")
               (prin-elementos (third clausula))
-              (prin2 "]")
+              (prin2 \])
        )
    )
    (terpri)
@@ -50,26 +50,19 @@
            (terpri) (pp-clausula (fourth clausula) 0 'v)
            (terpri) (pp-clausula (fifth clausula) 0 'v)
            (terpri) (pp-clausula clausula 9 'v)
-           (let ((tecla
-                  (loop
-                     (prin2 "Opcion (1, 2, V, Q):")
-                     (let ((char (console-in)))
-                        (when (pertenece char
-                                      (list (char-code #\1)
-                                            (char-code #\2)
-                                            (char-code #\v)
-                                            (char-code #\q)))
-                           (print char)
-                           (return char))
-                     )
-                  )))
-             (if (case tecla
-                 ((#.(char-code #\1)) (recorrer-ancestros (fourth clausula)))
-                 ((#.(char-code #\2)) (recorrer-ancestros (fifth clausula)))
-                 ((#.(char-code #\v) #.(char-code #\q)) nil)
-                 (otherwise nil))
-                 (recorrer-ancestros clausula)
-                 (= tecla (char-code #\v))))
+           (setq tecla
+                 (do ((char (prin2 "Opcion (1, 2, V, Q):") (console-in)))
+                     (((pertenece char '(\1 \2 \v \q)) (print char)))
+                 )
+           )
+           (if (selectq tecla
+                    (\1      (recorrer-ancestros (fourth clausula)))
+                    (\2      (recorrer-ancestros (fifth clausula)))
+                    ((\v \q) nil)
+               )
+               (recorrer-ancestros clausula)
+               (= tecla \v)
+           )
        )
        (print "Clausula base.")
    )
@@ -77,24 +70,22 @@
 
 (de interrupcion ()
    (if flag-interrupcion
-       (loop
-          (prin2 "Interrupcion:")
-          (let ((char (console-in)))
-             (when (= char | |)
-                (print2 "cont")
-                (return))
-             (when (<> (shell char) 'nada)
-                nil))
+       (do ((char (prin2 "Interrupcion:") (console-in)))
+           (((= char \ ) (print2 "cont")))
+           (if (<> (shell char) 'nada)
+               (prin2 "Interrupcion:")
+           )
        )
    )
 )
 
 (de shell (char &opt (clausula nil))
    (cond
-      ( (= char (char-code #\l)) (lisp))
-      ( (and (= char (char-code #\r)) clausula) (recorrer-ancestros clausula))
+      ( (= char \l) (lisp))
+      ( (and (= char \r) clausula) (recorrer-ancestros clausula))
       ( t 'nada)
    )
 )
 
 (print 'monitor-ok)
+

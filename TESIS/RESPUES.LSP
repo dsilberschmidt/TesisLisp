@@ -25,7 +25,7 @@
                 )
             )
             (mostrar-solucion raices solucion)
-            (if (eq 'si (interactuar primer-resolvente))
+            (if (= 'si (interactuar primer-resolvente))
                 (eliminar-respuestas-y-mostrarlas (rest resolventes) raices)
                 (setq flag-mas nil)
             )
@@ -35,23 +35,11 @@
 )
 
 (de interactuar (&opt (clausula nil))
-   (prin2 "Mas (s/n)?")
-   (let ((char (console-in)))
-      (loop
-         (cond
-            ((= char |s|)
-             (print 'si)
-             (return 'si))
-            ((= char |n|)
-             (print 'no)
-             (return 'no))
-            (t (if (<> (shell char clausula) 'nada)
-                   (prin2 "Mas (s/n)?")
-               )
-               (setq char (console-in))
-            )
-         )
-      )
+   (do ((char (prin2 "Mas (s/n)?") (console-in)))
+       (((= char \s) (print 'si)) ((= char \n) (print 'no)))
+       (if (<> (shell char clausula) 'nada)
+           (prin2 "Mas (s/n)?")
+       )
    )
 )
 
@@ -78,4 +66,4 @@
    (or (first clausula) (second clausula))
 )
 
-(print 'respuesta-ok)
+(print 'respuesta-ok)

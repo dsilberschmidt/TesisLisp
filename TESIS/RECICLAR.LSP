@@ -16,7 +16,7 @@
                             (cons supuesto supuestos-exitosos)
                       )
                       (pp-solucion variables supuesto)
-                      (if (eq (interactuar primer-resolvente) 'si)
+                      (if (= (interactuar primer-resolvente) 'si)
                           (reciclar variables (rest solucion) 'true)
                           (setq flag-mas nil)
                           'true
@@ -44,7 +44,7 @@
 (de goal-instanciado (supuesto
                         &aux (variables (first (third (first goal-interno))))
                      )
-   (aplicar (map-2-ar #'list variables supuesto)
+   (aplicar (map-2-ar list variables supuesto)
             (mapcar (lambda (x)(reemplazar x 3 nil))
                     goal-interno
             )
@@ -60,3 +60,4 @@
 )
 
 (print 'reciclar-ok)
+
