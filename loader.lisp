@@ -103,7 +103,13 @@
 ;; Antes de leer del teclado se vacia la salida: si no, el prompt ("?-",
 ;; "Interrupcion:", "Mas (s/n)?") aparece recien despues de lo que se tipea.
 (defun read (&rest args) (finish-output) (apply #'cl:read args))
+;; En modo por lotes (web) el teclado es una lista de teclas predefinidas;
+;; agotada, responde "n". Asi ninguna pausa del original queda esperando.
+(defvar *teclas* nil)
+(defvar *modo-lotes* nil)
 (defun console-in ()
+  (when *modo-lotes*
+    (return-from console-in (char-code (cl:if *teclas* (pop *teclas*) #\n))))
   (finish-output)
   (loop (let ((ch (read-char *standard-input* nil nil)))
           ;; Fin de entrada (uso no interactivo): terminar limpio. Los bucles
@@ -225,6 +231,55 @@
 (dolist (m *modulos*) (load-tlc (format nil "TESIS/~A.LSP" m)))
 
 (format t "~&TLC-ORIG cargado.~%")
+
+;;; ---------------------------------------------------- modo por lotes (web)
+;;; (consulta BASE META &key ...) corre una consulta completa sin interaccion
+;;; y devuelve la salida del sistema de 1989 como texto.
+;;;  BASE: nombre de una base de PROBLEMA/FUENTES.LSP (dama1, app...) o lista
+;;;        de formulas.   META: la meta, ej. (append ?x ?y [a b]).
+;;;  :respuestas N  cuantas respuestas pedir (default 5)
+;;;  :limite N      limite de profundidad (default sin limite)
+;;;  :monitor T     incluir la traza del monitor (sin pausas)
+;;;  :anchura T     busqueda en anchura en vez de conjunto de soporte
+;;;  :tiempo S      segundos maximos (default 20); al vencer devuelve lo
+;;;                 obtenido hasta ahi. Pedir mas respuestas cuando ya no
+;;;                 quedan puede no terminar nunca: la busqueda es completa.
+;;; Nunca abre el Lisp anidado: las unicas teclas que ve son s/n.
+(defvar *fuentes-cargadas* nil)
+(defun fuentes ()
+  (unless *fuentes-cargadas*
+    (let ((*standard-output* (make-broadcast-stream)))
+      (load-tlc "PROBLEMA/FUENTES.LSP"))
+    (setf *fuentes-cargadas* t)))
+
+(defun consulta (base meta &key (respuestas 5) limite monitor anchura (tiempo 20))
+  (fuentes)
+  (let* ((fuente (cond ((and (symbolp base) (boundp base)) (symbol-value base))
+                       ((consp base) base)
+                       (t (error "Base desconocida: ~A" base))))
+         (*modo-lotes* t)
+         (*teclas* (make-list (max 0 (1- respuestas)) :initial-element #\s))
+         (salida (make-string-output-stream)))
+    (handler-case
+        (sb-ext:with-timeout tiempo
+          (let ((*standard-output* salida))
+            (set 'flag-monitor monitor)
+            (set 'flag-interrupcion nil)
+            (set 'limite-profundidad limite)
+            (inicializar-gensym)          ; variables ?X_1... desde cero
+            (let* ((objeto (compilar fuente 'objeto-web))
+                   (bi (armar-clausulas objeto))
+                   (gi (armar-goal meta)))
+              (cl:if anchura (ancho bi gi) (soporte bi gi)))))
+      (sb-ext:timeout ()
+        (format salida "~&[tiempo agotado: ~D s]~%" tiempo)))
+    (get-output-stream-string salida)))
+
+;; Variante para entradas de texto (lo que llega de la web): lee con el lector
+;; de TLC y SIN evaluacion en lectura (#. desactivado).
+(defun consulta-texto (base-txt meta-txt &rest opciones)
+  (let ((*readtable* *tlc-readtable*) (*package* (find-package :tlc)) (*read-eval* nil))
+    (apply #'consulta (read-from-string base-txt) (read-from-string meta-txt) opciones)))
 
 ;;; ------------------------------------------------------------- machete
 (defparameter *ayuda* "

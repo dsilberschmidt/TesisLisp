@@ -88,5 +88,18 @@ rev|(reverse (cons a (cons b (cons c nil))) ?r)|12|?R=[C B A]
 app|(append [a] [b] ?z)|8|?Z=[A B]
 rev|(reverse [a b c] ?r)|12|?R=[C B A]
 CASOS
+# Modo por lotes (web): consulta-texto, teclas automaticas, tope de tiempo y
+# lectura segura (#. rechazado).
+lotes=$(timeout 120 sbcl --noinform --non-interactive --load loader.lisp --eval '(in-package :tlc)' --eval '
+(flet ((ok (nombre cond) (format t "~&LOTES ~:[FAIL~;PASS~] ~A~%" cond nombre)))
+  (ok "dama1 Si."        (search "Si." (consulta-texto "dama1" "(hay habitacion2 dama)")))
+  (ok "app 3 respuestas" (search "?X=[A B]" (consulta-texto "app" "(append ?x ?y [a b])" :respuestas 10)))
+  (ok "base propia"      (search "?QUIEN=SOCRATES" (consulta-texto "((paratodo (x) ((humano x) -> (mortal x))) (humano socrates))" "(mortal ?quien)")))
+  (ok "tope de tiempo"   (search "tiempo agotado" (consulta-texto "rev" "(reverse [a b c] ?r)" :tiempo 3 :respuestas 9)))
+  (ok "#. rechazado"     (handler-case (progn (consulta-texto "app" "#.(cl:print 1)") nil) (error () t))))' 2>&1 | grep -a "^LOTES")
+printf '%s\n' "$lotes" | grep -v PASS
+PASS=$((PASS + $(printf '%s\n' "$lotes" | grep -c "LOTES PASS")))
+FAIL=$((FAIL + $(printf '%s\n' "$lotes" | grep -c "LOTES FAIL")))
+n=$(printf '%s\n' "$lotes" | grep -c "^LOTES"); [ "$n" -ne 5 ] && { echo "FAIL  modo por lotes: $n/5 chequeos corrieron"; FAIL=$((FAIL+1)); }
 echo "PASS=$PASS  FAIL=$FAIL"
 [ $FAIL -eq 0 ]
