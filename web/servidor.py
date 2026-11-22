@@ -71,7 +71,9 @@ def consultar(base, meta, respuestas=5, limite=0, monitor=False, anchura=False):
     cmd = ["sbcl", "--dynamic-space-size", str(HEAP), "--noinform", "--non-interactive",
            "--no-sysinit", "--no-userinit", "--load", "loader.lisp",
            "--eval", "(tlc::consulta-env)"]
-    with UNA_A_LA_VEZ:
+    if not UNA_A_LA_VEZ.acquire(timeout=TIEMPO + 20):
+        return None                       # ocupado: otra consulta larga en curso
+    try:
         try:
             r = subprocess.run(cmd, cwd=RAIZ, env=env, capture_output=True, text=True,
                                stdin=subprocess.DEVNULL, preexec_fn=limites,
@@ -79,6 +81,8 @@ def consultar(base, meta, respuestas=5, limite=0, monitor=False, anchura=False):
         except subprocess.TimeoutExpired:
             print("consulta: proceso cortado por tiempo", flush=True)
             return "[tiempo agotado]"
+    finally:
+        UNA_A_LA_VEZ.release()
     if "=====SALIDA=====" in r.stdout:
         return r.stdout.split("=====SALIDA=====", 1)[1].strip("\n")[:200_000]
     print(f"consulta: fallo rc={r.returncode}: {r.stderr[-300:]}", flush=True)
@@ -121,6 +125,8 @@ class Manejador(BaseHTTPRequestHandler):
                 return self.responder(413, '{"error": "base o meta demasiado larga"}')
             salida = consultar(base, meta, q.get("respuestas", 5), q.get("limite", 0),
                                bool(q.get("monitor")), bool(q.get("anchura")))
+            if salida is None:
+                return self.responder(503, '{"error": "el sistema esta ocupado con otra consulta; proba en un momento"}')
             self.responder(200, json.dumps({"salida": salida}, ensure_ascii=False))
         except (ValueError, TypeError):
             self.responder(400, '{"error": "consulta mal formada"}')

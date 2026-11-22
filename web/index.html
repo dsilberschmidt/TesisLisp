@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LGC 1989</title>
+<meta name="description" content="LGC, un demostrador de teoremas por resolución escrito en Lisp en 1989, corriendo sin modificar en la web.">
 <style>
   :root { --fondo:#0c120c; --texto:#b8f5b0; --tenue:#6f9a69; --borde:#2c4a2a; --acento:#e8ffb0; }
   * { box-sizing:border-box; }
@@ -29,6 +30,8 @@
   pre { margin-top:18px; padding:14px; min-height:120px; white-space:pre-wrap; word-break:break-word;
         border:1px solid var(--borde); border-radius:4px; background:#050a05; }
   pre::before { content:"?- "; color:var(--tenue); }
+  #teclas { display:none; gap:8px; margin-top:8px; align-items:center; color:var(--tenue); }
+  #teclas button { padding:4px 14px; cursor:pointer; }
   footer { margin-top:28px; font-size:13px; color:var(--tenue); }
 </style>
 </head>
@@ -40,13 +43,14 @@
 
   <label for="sel">Base</label>
   <select id="sel"></select>
-  <textarea id="base" spellcheck="false" aria-label="Formulas de la base"></textarea>
+  <textarea id="base" wrap="off" spellcheck="false" aria-label="Formulas de la base"></textarea>
   <p>Pod&eacute;s editar las f&oacute;rmulas: <code>and or not -&gt; &lt;-&gt; xor</code>,
      <code>(paratodo (x) ...)</code>, <code>(existe (x) ...)</code>, listas <code>[a b c]</code>.</p>
 
   <label for="meta">Meta</label>
   <input id="meta" type="text" spellcheck="false" autocomplete="off">
   <div class="ejemplos" id="ejemplos"></div>
+  <p id="nota"></p>
 
   <div class="fila">
     <label>respuestas <input id="resp" type="number" min="1" max="20" value="3"></label>
@@ -56,8 +60,14 @@
   </div>
   <button class="principal" id="ir">Consultar</button>
   <pre id="salida" aria-live="polite"></pre>
+  <div id="teclas">Mas (s/n)?
+    <button type="button" id="s" title="buscar otra respuesta">s</button>
+    <button type="button" id="n" title="terminar">n</button></div>
 
-  <footer>l&iacute;mite 0 = sin l&iacute;mite (lo m&aacute;s r&aacute;pido cuando hay prueba).
+  <footer>C&oacute;mo leer la salida: <code>Si.</code> = demostrado; <code>?X=...</code> = valores
+    que hacen verdadera la meta; <code>No hay (mas) respuestas.</code> = no se pudo demostrar
+    (no significa que sea falso). La primera consulta puede tardar unos segundos en despertar al servidor.<br>
+    l&iacute;mite 0 = sin l&iacute;mite (lo m&aacute;s r&aacute;pido cuando hay prueba).
     Cada consulta tiene un tope de 20&nbsp;s. C&oacute;digo y documentaci&oacute;n de la tesis:
     <a href="https://github.com/dsilberschmidt/TesisLisp">github.com/dsilberschmidt/TesisLisp</a></footer>
 </main>
@@ -84,19 +94,37 @@ function elegir(nombre) {
   $("meta").value = ej[0] || "";
   $("ejemplos").replaceChildren(...ej.map(t => {
     const bt = document.createElement("button"); bt.type = "button"; bt.textContent = t;
-    bt.onclick = () => { $("meta").value = t; }; return bt;
+    bt.onclick = () => { $("meta").value = t; ajustar(); }; return bt;
   }));
+  ajustar();
 }
 
+// Meta sin variables: basta una respuesta. El sistema es completo y puede
+// encontrar la misma verdad por varios caminos de prueba, y repetiria "Si.".
+function ajustar() {
+  const conVariables = $("meta").value.includes("?");
+  if (!conVariables) $("resp").value = 1;
+  else if (+$("resp").value === 1) $("resp").value = 3;
+  $("nota").textContent = conVariables ? "" :
+    "Meta sin variables: se pide una respuesta. Si pedís más, \"Si.\" puede repetirse: " +
+    "son caminos de prueba distintos para el mismo hecho.";
+}
+
+// El original preguntaba "Mas (s/n)?" y esperaba una tecla. Aca cada consulta
+// corre entera: si se corto porque se llego al numero pedido, s la repite
+// pidiendo una respuesta mas (se recalcula desde cero) y n cierra.
 async function consultar() {
-  $("ir").disabled = true; $("salida").textContent = "pensando...";
+  $("ir").disabled = true; $("teclas").style.display = "none";
+  $("salida").textContent = "pensando...";
   try {
     const r = await fetch("/consulta", { method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({ base:$("base").value, meta:$("meta").value,
         respuestas:+$("resp").value || 1, limite:+$("lim").value || 0,
         monitor:$("mon").checked, anchura:$("anc").checked }) });
     const d = await r.json();
-    $("salida").textContent = d.salida ?? ("error: " + d.error);
+    const salida = d.salida ?? ("error: " + d.error);
+    $("salida").textContent = salida;
+    if (/Mas \(s\/n\)\?NO\s*$/.test(salida) && +$("resp").value < 20) $("teclas").style.display = "flex";
   } catch (e) { $("salida").textContent = "error de conexion: " + e; }
   $("ir").disabled = false;
 }
@@ -110,6 +138,9 @@ fetch("/bases").then(r => r.json()).then(bs => {
   elegir("dama1"); $("sel").value = "dama1";
 });
 $("ir").onclick = consultar;
+$("s").onclick = () => { $("resp").value = +$("resp").value + 1; consultar(); };
+$("n").onclick = () => { $("teclas").style.display = "none"; };
+$("meta").addEventListener("input", ajustar);
 $("meta").addEventListener("keydown", e => { if (e.key === "Enter") consultar(); });
 </script>
 </body>
