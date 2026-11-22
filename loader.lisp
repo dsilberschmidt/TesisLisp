@@ -15,7 +15,7 @@
 (defpackage :tlc
   (:use :cl)
   (:shadow #:if #:do #:= #:nth #:rest #:last #:union #:gensym #:listp
-           #:string #:vector #:eval #:print))
+           #:string #:vector #:eval #:print #:read #:load))
 (in-package :tlc)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -100,7 +100,11 @@
 (defun prin2 (x) (princ x))
 (defun print2 (x) (prog1 (princ x) (terpri)))
 (defun print3 (x) (terpri) (princ x))
+;; Antes de leer del teclado se vacia la salida: si no, el prompt ("?-",
+;; "Interrupcion:", "Mas (s/n)?") aparece recien despues de lo que se tipea.
+(defun read (&rest args) (finish-output) (apply #'cl:read args))
 (defun console-in ()
+  (finish-output)
   (loop (let ((ch (read-char *standard-input* nil nil)))
           ;; Fin de entrada (uso no interactivo): terminar limpio. Los bucles
           ;; de teclado del original (Interrupcion, Mas s/n) no tienen salida
@@ -211,10 +215,13 @@
 (defun load-tlc (path)
   (let ((*readtable* *tlc-readtable*) (*package* (find-package :tlc)))
     (with-open-file (s path)
+      (handler-bind ((warning #'muffle-warning))
       (loop for f = (read-tlc s) until (eq f :eof)
             do (cl:eval (cl:if (and (consp f) (member (car f) '(de df)))
                                f
-                               (sb-walker:walk-form f nil #'lisp1-walk)))))))
+                               (sb-walker:walk-form f nil #'lisp1-walk))))))))
+;; LOAD del dialecto: carga con el lector de TLC, sin ruido del compilador.
+(defun load (path) (load-tlc path) t)
 (dolist (m *modulos*) (load-tlc (format nil "TESIS/~A.LSP" m)))
 
 (format t "~&TLC-ORIG cargado.~%")
