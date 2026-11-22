@@ -4,6 +4,9 @@
 A complete resolution theorem prover and logic programming language written in Lisp in 1989
 as a graduation thesis, running again — unmodified — on modern SBCL.
 
+**Try it online: <https://lgc1989.fly.dev>** (the first query may take a few seconds
+while the server wakes up).
+
 Repository: https://github.com/dsilberschmidt/TesisLisp
 
 ## Status
@@ -163,7 +166,7 @@ Mas (s/n)?
 
 Regression: `./run-tests.sh` (about 20 s).
 
-## Web (branch `web`, in progress)
+## Web
 
 ```bash
 python3 web/servidor.py        # http://localhost:8080
