@@ -1,0 +1,108 @@
+
+                       Propuesta de tesis
+
+
+Introducción:
+
+
+     La  programación lógica surge tras el descubrimiento de  que
+
+en  un  algoritmo  existe una componente lógica  distinta  de  la
+
+componente de control.  En los lenguajes convencionales estas dos
+
+componentes  se confunden.  Los lenguajes de programación  lógica
+
+persiguen  el propósito de explicitar solo la componente  lógica.
+
+El  mas  popular  de ellos es Prolog.  Es un  objetivo  altamente
+
+deseable que las dos componentes sean independientes,  vale decir
+
+que  un  programa  /  sistema  pueda  se  'ejecutado'  sin  mayor
+
+requerimiento que su especificación lógica. Entre los usos que se
+
+mencionan  de  Prolog  suele nombrarse el de  poder  usarse  como
+
+herramienta  de  prototipación  rápida.  Pero  al  investigar  la
+
+performance  de  Prolog  en este campo nos  encontramos  con  las
+
+siguientes falencias:
+
+
+
+     -  Oraciones simples como " si A entonces B o C " ó " no A "
+
+        no pueden se expresadas con una única cláusula Prolog.
+
+     -  Existen situaciones lógicas (conjunto de fórmulas lógicas)
+
+        resolubles  que Prolog no puede resolver debido a que  no
+
+        cuenta con un mecanismo de inferencia completo.
+
+     -  Existen  situaciones lógicas que Prolog  solamente  puede
+
+        resolver  si  se le presentan las cláusulas en  un  orden
+
+        determinado   por  la  estrategia  de  su  mecanismo   de
+
+        inferencia.  De  presentarse las mismas cláusulas en otro
+
+        orden Prolog no las resuelve.
+
+
+
+     En    definitiva   no   se   puede   programar   en   Prolog
+
+independizándose  de  la  componente  de  control,  es  necesario
+
+conocer   su  mecanismo  de  inferencia.   A  partir   de   estas
+
+observaciones toma cuerpo nuestra propuesta.
+
+
+
+Objetivo:
+
+
+     Implementar  un lenguaje de programación lógica orientado  a
+
+se una herramienta de prototipación rápida.
+
+     A tales efectos es necesario:
+
+
+     -  Que  el  lenguaje  admita cualquier  aseveración  posible
+
+        expresada en fórmulas lógicas de primer orden.
+
+     -  Que  el  mecanismo de inferencia incorpore al  menos  una
+
+        estrategia de inferencia completa.
+
+
+
+     El sistema contaría ademas con las siguientes facilidades:
+
+
+     -  Selección de estrategias para el mecanismo de inferencia.
+
+     -  Modo de ejecución paso a paso.
+
+     -  Traductor  de  fórmulas  de  lógica  de  primer  orden  a
+
+        fórmulas en forma clausal.
+
+
+
+     Con  estas características adicionales el sistema puede  ser
+
+utilizado como herramienta de soporte en un curso de Programación
+
+lógica.  Este  tema  se  ve  durante la  carrera  en  la  materia
+
+Inteligencia Artificial II.
+

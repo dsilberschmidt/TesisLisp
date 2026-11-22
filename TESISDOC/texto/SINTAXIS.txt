@@ -1,0 +1,44 @@
+
+
+                         Sintaxis de LGC
+
+
+
+     Base-de-conocimiento := { Fórmula }
+
+
+     Goal  :=  Fórmula
+
+
+     Fórmula := [ Atomo | (Fórmula and Fórmula)
+
+                        | (Fórmula or  Fórmula)
+
+                        | (Fórmula xor Fórmula)
+
+                        | (Fórmula  -> Fórmula)
+
+                        | (Fórmula <-> Fórmula)
+
+                        | (not Fórmula)
+
+                        | (paratodo Variables Fórmula)
+
+                        | (existe   Variables Fórmula)
+
+                ]
+
+
+     Variables := Lista-de-símbolos
+
+
+     Atomo  :=  [ Símbolo | Lista-de-símbolos ]
+
+
+     Lista-de-símbolos := { Símbolo }
+
+
+     Símbolo   :=   símbolo lisp representado por un conjunto  de
+
+                    caracteres ascii
+

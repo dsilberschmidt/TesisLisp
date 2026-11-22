@@ -1,0 +1,120 @@
+                    Mecanismo de Unificación
+
+
+
+     Unificar dos literales consiste en encontrar una sustitución,
+
+tal  que  aplicada  a  cada uno  de  los  literales  se  obtengan
+
+literales  idénticos.  Nuestra función unificar encuentra de  ser
+
+posible el unificador mas general y sino devuelve fracaso.
+
+
+
+                        Resolver Completo
+
+
+     Resolver-completo recibe dos nodos distintos llamados padres
+
+y  devuelve una lista de nodos llamados resolventes.  Esta  lista
+
+contiene  todas  las resolventes posibles que se  pueden  obtener
+
+dado dos nodos. Recordemos que dos cláusulas resuelven si existen
+
+dos literales unificables, proveniente cada uno de cada cláusula,
+
+uno negado y otro afirmado. La resolvente es el resultado de unir
+
+los literales de cada cláusula,  eliminando los dos literales que
+
+unificaron  y aplicando la sustitución que generó la  unificación
+
+al resto de los literales.
+
+     Las resolventes reciben como lista de posibles respuestas la
+
+unión de las listas de posibles respuestas de los padres.
+
+
+
+                      Eliminar Tautologías
+
+
+     Eliminar-tautologías  es una función de nuestro sistema  que
+
+dada  una  lista  de  nodos,  devuelve otra lista en  la  que  se
+
+excluyen  las tautologías de la lista inicial.  Cabe aclarar  que
+
+una  cláusula  es  una tautología si tiene al  menos  un  literal
+
+afirmado  y negado a la vez.  Este tipo de cláusulas son  siempre
+
+verdaderas  y  eliminándolas no se altera la  compatibilidad  del
+
+sistema.
+
+
+
+                       Fusionar Cláusulas
+
+
+     Fusionar-cláusulas  recibe  una lista de nodos que  devuelve
+
+reemplazando  las  cláusulas fusionables por  la  correspondiente
+
+cláusula compactada. Si esto ocurre se reemplaza en el nodo, tipo
+
+'cláusula'  por  tipo  'fusión',  dado  que  hay  estategias  que
+
+discriminan  entre  las  cláusulas  comunes  y  las  que   fueron
+
+fusionadas.  Recordemos  que una cláusula es fusionable si existe
+
+una  sustitución  tal que aplicada a la cláusula deja uno  o  más
+
+literales  iguales.  Cuando esto ocurre se aplica la  sustitución
+
+mínima y se eliminan los literales repetidos.
+
+     El  uso de fusión hace que la cláusula  pierda  información.
+
+Sin  embargo,  si  no se fusionan las cláusulas iniciales  no  se
+
+altera la compatibilidad del sistema (no demostrado). Normalmente,
+
+el uso de fusión reduce el area de busqueda.
+
+
+
+
+               Eliminar y Auto Depurar Subsumidas
+
+
+     Eliminar-subsumidas recibe dos listas de nodos y devuelve la
+
+primer lista,  sacando de ella todos los nodos que son subsumidos
+
+por algun nodo de la segunda lista.
+
+     Auto-depurar-subsumidas   recibe  una  lista  de  nodos  que
+
+devuelve  eliminando  de esta los nodos que  son  subsumidos  por
+
+otros  de esa misma lista y tomando en cuenta que si dos nodos se
+
+subsumen mutuamente (son iguales) solo se elimina uno solo.
+
+     Una cláusula subsume a otra,  si existe una sustitución  tal
+
+que  aplicada a la primera esta quede incluida en la segunda.  Si
+
+esto ocurre, la segunda cláusula puede ser eliminada, sin alterar
+
+la compatibilidad del sistema.  Bajo esta definición,  la primera
+
+cláusula  es  mas  general que la segunda y  en  consecuencia  la
+
+segunda cláusula no aporta conocimiento al sistema.

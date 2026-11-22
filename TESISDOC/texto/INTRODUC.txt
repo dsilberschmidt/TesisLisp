@@ -1,0 +1,50 @@
+
+
+LGC  Lenguaje de programación lógica de primer orden con diversos
+
+                     mecanismos de inferencia
+
+
+
+    Programamos  un  sistema refutador por resolución  basado  en
+
+cláusulas  sin  restricción de Horn con mecanismo  de  inferencia
+
+completo.
+
+     Un  sistema  subsidiario  traduce un  conjunto  de  fórmulas
+
+lógicas  de  primer  orden  en  el  correspondiente  conjunto  de
+
+cláusulas.
+
+    De  esta manera se puede programar en lógica de primer  orden
+
+ independizándose de la componente de control.
+
+
+
+
+
+
+    Fundamentos de un sistema refutador basado en resolución
+
+
+
+     Esta clase de sistemas deduce una fórmula lógica a partir de
+
+un conjunto de ellas de la siguiente manera:
+
+     Niega la fórmula que se quiere demostrar.
+
+     A partir  de la negación anterior y el conjunto original  de
+
+          fórmulas realiza sucesivos pasos de inferencia.
+
+     Si se deduce una contradicción la fórmula original es cierta.
+
+     Si  se terminan los pasos de inferencia y no se llegó a  una
+
+          contradicción,  nada se puede decir sobre la validez de
+
+          la fórmula que se intentó probar.

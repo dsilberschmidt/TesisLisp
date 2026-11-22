@@ -1,0 +1,64 @@
+
+          Estructura fundamental. La cláusula. El nodo
+
+
+     La  unidad  estructural  a través de  la  cual  se  almacena
+
+ conocimiento  y se hacen inferencias es el nodo.   Un nodo,  tal
+
+ como  lo definimos nosotros es una lista ordenada  que  contiene
+
+ los   elementos   de  una  cláusula  y  elementos   informativos
+
+ adicionales, a saber:
+
+
+          1- Una lista de literales positivos
+
+          2- Una lista de literales negativos
+
+          3- Una lista de posibles respuestas
+
+          4- Una cláusula padre
+
+          5- La otra cláusula padre
+
+          6- La profundidad de la cláusula
+
+          7- El tipo de cláusula
+
+          8- El número de cláusula
+
+
+     Los   primeros   dos  elementos  constituyen   la   cláusula
+
+ propiamente dicha.
+
+     La  lista de posibles respuestas  es una lista de  distintas
+
+instanciaciones  de  las variables del goal (Ver información  del
+
+mecanismo de extracción de respuesta utilizado en el apéndice).
+
+     Cada   cláusula  es  o  bien  miembro  de  de  la  base   de
+
+conocimiento  original,  o bien producto de la resolución  de dos
+
+cláusulas. Estas dos cláusulas son las llamadas padre1 y padre2.
+
+
+     La  profundidad de las cláusulas de la base inicial es cero.
+
+Las  demas  cláusulas tienen la profundidad  del  progenitor  más
+
+profundo incrementada en uno.
+
+     Una cláusula puede tener los siguientes tipos:  'cláusula' o
+
+'fusión'.  Hay un mecanismo de inferencia,  filtrado de ancestros
+
+con control de fusión, que base su accionar en esta información.
+
+     Numeramos las cláusulas correlativamente para identificarlas
+
+rapidamente.

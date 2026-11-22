@@ -1,0 +1,75 @@
+Mecanismos de inferencia y sistema de búsqueda
+
+En un sistema refutador el orden en que se escogen las cláusulas a ser resueltas determinan el mecanismo de inferencia. Se intentó en este sistema que esta componente sea lo más versátil posible.
+
+Los nodos están organizados en dos listas: expandidas y expandibles. En expandidas están todos los nodos que ya fueron resueltos alguna vez. Los restantes nodos están en expandibles.
+
+Expandir un nodo perteneciente a expandibles consiste en resolver ese nodo contra cada uno de los nodos de expandidas.
+
+El funcionamiento del sistema se puede sintetizar en:
+
+
+   Mientras haya expandibles y operador quiera seguir
+             Si primer nodo tiene profundidad OK
+                  Expandir primer nodo de expandibles
+                  Si hay cláusula vacía
+                      Mostrar respuesta
+                  Filtrar resolventes
+                  Colocar según heurística primaria resolventes
+                     en expandibles
+              Colocar según heurística secundaria primer nodo de
+                 expandibles en expandidas
+
+Los nodos ingresan y se van ordenando en expandidas de
+acuerdo a la heurística secundaria y en expandibles de acuerdo a
+la heurística primaria.
+
+Lo que nosotros llamamos heurística tiene tres componentes:
+
+
+     Admisibilidad:
+
+Esta es una función booleana que permite o no el ingreso de un nodo a la lista. Para la heurística primaria solo esta implementada una admisibilidad sin restricción, mientras que para la heurística secundaria existen además la restricción fusión (solo admite nodos tipo 'fusión') y la restricción entrada-lineal (solo admite el conjunto base inicial). En el futuro se van a implementar admisibilidades que restrinjan por la longitud de las cláusulas y complejidad de las respuestas.
+
+
+     Función-h:
+
+Es la clásica función heurística. Es un estimación del costo de la distancia que media entre la cláusula considerada y la cláusula vacía o final de la búsqueda. Están implementadas las funciones-h preferencia de unidades y preferencia de menores, además de una función-h constante.
+
+
+     Prioridad:
+
+Puede ser vertical u horizontal. Resuelve colisiones entre cláusulas con igual función-h. Vertical da preferencia, dentro de los nodos con igual función-h, al mas reciente. Horizontal al mas antiguo. En el futuro se van a implementar prioridades random.
+
+Es muy fácil programar funciones-h. Tenemos muchos proyectos al respecto.
+
+Esta previsto que un nodo se expanda sólo contra ancestros suyos o nodos del conjunto base. Esta es la estrategia de filtrado de ancestros.
+
+Resumiendo, el mecanismo de inferencia queda determinado por la siguiente lista de parámetros:
+
+
+     llamada  :=  [ soporte | ancho ]
+
+     admisibilidad-1 := [ sin-restricción ]
+
+     función-h-1  :=  [ constante | menores | unidades ]
+
+     prioridad-1  :=  [ vertical | horizontal ]
+
+     admisibilidad-2 := [ sin-restricción | entrada-lineal
+
+                          | restricción-fusión ]
+
+     función-h-2  :=  [ constante | menores | unidades ]
+
+     prioridad-2  :=  [ vertical | horizontal ]
+
+     limite-profundidad :=  [ <número> | nil ]
+
+     flag-filtrado-ancestros := [ true | nil ]
+
+     flag-control-tautología := [ true | nil ]
+
+     flag-control-fusión     := [ true | nil ]
+
+     flag-control-subsunción := [ true | nil ]
