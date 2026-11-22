@@ -185,7 +185,7 @@ Give the instance 1 GB of memory: the worst case (a runaway search up to the 20 
 peaks at about 430 MB of SBCL heap. `LGC_HEAP_MB=256` fits a 512 MB instance, but
 runaway queries then fail without partial output.
 
-Deploy on [Fly.io](https://fly.io) (`fly.toml` included: Madrid, 1 GB, scale to zero —
+Deploy on [Fly.io](https://fly.io) (`fly.toml` included: Paris, 1 GB, scale to zero —
 the machine stops after a few idle minutes and starts on the next request):
 
 ```bash

@@ -1,7 +1,7 @@
 # Despliegue de LGC 1989 en Fly.io. El nombre de la app debe ser unico en Fly:
 # si "lgc1989" esta tomado, cambialo aca y en `fly apps create`.
 app = "lgc1989"
-primary_region = "mad"          # Madrid
+primary_region = "cdg"          # Paris
 
 [build]
   dockerfile = "Dockerfile"
