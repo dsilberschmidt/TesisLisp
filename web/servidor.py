@@ -25,6 +25,10 @@ RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGINA = os.path.join(RAIZ, "web", "index.html")
 MAX_BASE, MAX_META, MAX_CUERPO = 4000, 400, 8000
 TIEMPO = 20                      # segundos de busqueda (dentro de Lisp)
+# Heap de SBCL en MB. El peor caso medido (busqueda desbocada hasta el corte de
+# 20 s) usa ~430 MB con 512: la instancia necesita 1 GB. Con 256 entra en una
+# instancia de 512 MB, pero las desbocadas mueren antes, sin salida parcial.
+HEAP = int(os.environ.get("LGC_HEAP_MB", "512"))
 UNA_A_LA_VEZ = threading.Semaphore(1)
 
 
@@ -48,7 +52,8 @@ BASES = leer_bases()
 
 def limites():
     resource.setrlimit(resource.RLIMIT_CPU, (TIEMPO + 10, TIEMPO + 10))
-    resource.setrlimit(resource.RLIMIT_AS, (1 << 30, 1 << 30))      # 1 GB
+    tope = (HEAP + 512) << 20                                         # heap + margen
+    resource.setrlimit(resource.RLIMIT_AS, (tope, tope))
     resource.setrlimit(resource.RLIMIT_NOFILE, (64, 64))
     # Sin RLIMIT_NPROC: cuenta todos los procesos del usuario en la maquina y,
     # agotado, SBCL no puede crear el hilo del tope de tiempo. En el contenedor
@@ -63,7 +68,7 @@ def consultar(base, meta, respuestas=5, limite=0, monitor=False, anchura=False):
            "TLC_MONITOR": "1" if monitor else "0",
            "TLC_ANCHURA": "1" if anchura else "0",
            "TLC_TIEMPO": str(TIEMPO)}
-    cmd = ["sbcl", "--dynamic-space-size", "512", "--noinform", "--non-interactive",
+    cmd = ["sbcl", "--dynamic-space-size", str(HEAP), "--noinform", "--non-interactive",
            "--no-sysinit", "--no-userinit", "--load", "loader.lisp",
            "--eval", "(tlc::consulta-env)"]
     with UNA_A_LA_VEZ:

@@ -174,6 +174,17 @@ get the original system's output. Each query runs `(tlc::consulta-env)` in a fre
 throwaway SBCL process with CPU, memory and 20 s limits, one at a time; no toplevel,
 no nested Lisp, no read-time evaluation. Python standard library only.
 
+Container (Ubuntu 24.04 + SBCL + Python, non-root, read-only code):
+
+```bash
+docker build -t lgc1989 .
+docker run --rm -p 8080:8080 lgc1989          # http://localhost:8080
+```
+
+Give the instance 1 GB of memory: the worst case (a runaway search up to the 20 s cap)
+peaks at about 430 MB of SBCL heap. `LGC_HEAP_MB=256` fits a 512 MB instance, but
+runaway queries then fail without partial output.
+
 ## Philosophy of the Port
 
 The objective is not merely to “make it work”, but:
