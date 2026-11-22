@@ -10,7 +10,7 @@
     (defpackage :tesis
       (:use :cl :compat)
       ;; Sombras por choques/semánticas de dialecto
-      (:shadow rest last union gensym nth if list string vector))))
+      (:shadow rest last union gensym nth if list string vector listp))))
 
 ;; 2) Cargar shim en :compat
 (let ((*package* (find-package :compat)))
@@ -33,6 +33,8 @@
 (defun rest (lst &optional (n 1)) (cl:nthcdr n lst))
 (defun last (lst) (cl:if (cl:consp lst) (cl:car (cl:last lst)) nil))
 (defun union (a b) (cl:union a b :test #'cl:equal))
+;; LISTP historico: NIL no es lista (listp = consp).
+(defun listp (x) (cl:consp x))
 (defun gensym (&optional (prefix "G")) (cl:gensym prefix))
 (defun add1 (x) (cl:1+ x))
 (defun sub1 (x) (cl:1- x))
@@ -143,14 +145,26 @@
   ;; Inserta símbolo (intern) a partir del string NAME en el paquete :TESIS
   (cl:intern name (find-package :tesis)))
 
-;; Macro DF (ON/OFF de banderas)
+;; DF del dialecto = FEXPR: recibe sus argumentos SIN evaluar.
+;; (on flag-x) debe poner T en la variable FLAG-X, no evaluarla.
+;; Antes DF definia una funcion comun: (on flag-x) evaluaba flag-x (NIL) y
+;; no hacia nada, en silencio => tautologia, fusion y subsuncion quedaban
+;; APAGADAS y la frontera explotaba (dama1).
+;; Se implementa como macro que pasa la lista de argumentos citada a una
+;; funcion auxiliar con el cuerpo original.
 (defmacro df (name (flags) &body body)
-  (let ((rest (cl:gensym "ARGS")))
-    `(defun ,name (&rest ,rest)
-       (let ((,flags (if (and ,rest (cl:listp (car ,rest)) (null (cdr ,rest)))
-                         (car ,rest)
-                         ,rest)))
-         ,@body))))
+  (let ((impl (cl:intern (cl:concatenate 'cl:string (cl:symbol-name name) "%FEXPR")))
+        (args (cl:gensym "ARGS")))
+    `(cl:progn
+       (cl:defun ,impl (,flags) ,@body)
+       (cl:defmacro ,name (&rest ,args)
+         (cl:list ',impl (cl:list 'cl:quote ,args))))))
+
+;; ON/OFF se predeclaran como fexprs ANTES de cargar TESIS/: INICIAL.LSP
+;; compila INICIALIZACION (que los usa) antes de su propio (df on ...).
+;; Mismo cuerpo que INICIAL.LSP; su redefinicion posterior es identica.
+(df on (flags) (cl:mapc (cl:lambda (flag) (cl:set flag t)) flags))
+(df off (flags) (cl:mapc (cl:lambda (flag) (cl:set flag nil)) flags))
 
 ;; Iterador REP del dialecto (repite N veces el cuerpo)
 (defmacro rep (count &body body)
@@ -158,9 +172,12 @@
     `(cl:dotimes (,i ,count)
        ,@body)))
 
-;; Concatenación de varias listas (como append+ pero nombre original)
-(defun concat+ (&rest lists)
-  (apply #'cl:append lists))
+;; CONCAT+ del dialecto: construye una lista con los primeros argumentos
+;; como ELEMENTOS y el ultimo como COLA (equivale a cl:list*), no append.
+;; Unico uso: FUSION.LSP arma la clausula (pos neg resp . resto); con append
+;; se aplanaban los positivos y la clausula perdia su estructura.
+(defun concat+ (&rest args)
+  (apply #'cl:list* args))
 
 ;; String de longitud N con caracter dado
 (defun newstring (length char-code)
