@@ -102,6 +102,17 @@ Goal evaluation using resolution.
 
 Interactive interpreter.
 
+## Quick start
+
+```bash
+sudo apt install sbcl          # macOS: brew install sbcl
+git clone https://github.com/dsilberschmidt/TesisLisp.git
+cd TesisLisp
+./lgc
+```
+
+Then, at the `>` prompt: `(ayuda)` prints the cheat sheet (in Spanish).
+
 ## Usage
 
 Interactive, as in 1989:

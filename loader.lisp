@@ -238,8 +238,9 @@ TOPLEVEL  >
 
 INTERPRETE  ?-   (las metas van aca, no en el >)
   (hay habitacion2 dama)   (presidente ?x)   (append ?x ?y [a b])
-  list          muestra la base         add <formula>  agrega a la base
-  on <flag>     off <flag>              lisp     Lisp anidado
+  list          muestra la base         lisp     Lisp anidado
+  add   (Enter) y despues la formula a agregar a la base
+  on / off  (Enter) y despues el NOMBRE de UN flag (no una meta)
   exit          vuelve al toplevel
 
 TECLAS  (escribir y Enter)
@@ -251,7 +252,9 @@ FLAGS  (on por defecto, salvo la ultima)
   flag-monitor flag-interrupcion flag-control-tautologia
   flag-control-fusion flag-control-subsuncion flag-reciclaje
   flag-filtrado-ancestros   (tiene el bug de tipeo de 1989)
-  Sin pausas del monitor: (off flag-interrupcion) antes de (i)
+  En el >:  (off flag-monitor flag-interrupcion)  apaga el monitor
+            (off flag-interrupcion)               monitor sin pausas
+  Atrapado en Interrupcion:  l Enter, (off flag-interrupcion), (quit)
 
 ESTRATEGIA  (desde el >)
   (setq limite-profundidad 8)          sin limite por defecto
