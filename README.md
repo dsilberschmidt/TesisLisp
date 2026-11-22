@@ -206,6 +206,22 @@ The objective is not merely to “make it work”, but:
 - modernize carefully
 - avoid accidental semantic drift
 
+## Operación
+
+Web
+- Sitio: <https://lgc1989.fly.dev> — ¿está vivo?: <https://lgc1989.fly.dev/salud>
+
+Fly.io (requieren login)
+- Panel de la app: <https://fly.io/apps/lgc1989>
+- Monitoreo y logs: <https://fly.io/apps/lgc1989/monitoring> — por terminal: `fly logs -a lgc1989`
+- Gasto: sección *Billing* del panel (plan Free: 5 USD de uso por mes; si se superan, pasa a pago por uso)
+- Redesplegar tras un cambio: `fly deploy --ha=false` (si el build remoto se traba: `--local-only`)
+
+Local
+- Intérprete de 1989: `./lgc`, después `(ayuda)`
+- Web local: `python3 web/servidor.py` → <http://localhost:8080>
+- Tests: `./run-tests.sh` (61)
+
 ## License
 
 Historical academic code.
