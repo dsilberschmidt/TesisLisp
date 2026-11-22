@@ -281,6 +281,24 @@
   (let ((*readtable* *tlc-readtable*) (*package* (find-package :tlc)) (*read-eval* nil))
     (apply #'consulta (read-from-string base-txt) (read-from-string meta-txt) opciones)))
 
+;; Entrada para el servidor web: base, meta y opciones llegan por variables de
+;; entorno (sin comillas que escapar); la salida va tras una marca, para
+;; separarla de los mensajes de carga.
+(defun consulta-env ()
+  (flet ((env (n &optional d) (or (sb-ext:posix-getenv n) d))
+         (num (n d) (let ((v (sb-ext:posix-getenv n)))
+                      (cl:if (and v (every #'digit-char-p v) (plusp (length v))) (parse-integer v) d))))
+    (let ((res (handler-case
+                   (consulta-texto (env "TLC_BASE" "nil") (env "TLC_META" "nil")
+                                   :respuestas (min 20 (num "TLC_RESPUESTAS" 5))
+                                   :limite (let ((l (num "TLC_LIMITE" 0))) (cl:if (plusp l) l nil))
+                                   :monitor (equal (env "TLC_MONITOR") "1")
+                                   :anchura (equal (env "TLC_ANCHURA") "1")
+                                   :tiempo (min 25 (num "TLC_TIEMPO" 20)))
+                 (error (e) (format nil "** error: ~A" e)))))
+      (format t "~&=====SALIDA=====~%~A" res)
+      (finish-output))))
+
 ;;; ------------------------------------------------------------- machete
 (defparameter *ayuda* "
 LGC - Lenguaje de Programacion Logica (tesis 1989)                MACHETE

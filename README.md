@@ -163,6 +163,17 @@ Mas (s/n)?
 
 Regression: `./run-tests.sh` (about 20 s).
 
+## Web (branch `web`, in progress)
+
+```bash
+python3 web/servidor.py        # http://localhost:8080
+```
+
+A one-page front end: pick one of the 1989 bases (or write your own), type a goal,
+get the original system's output. Each query runs `(tlc::consulta-env)` in a fresh,
+throwaway SBCL process with CPU, memory and 20 s limits, one at a time; no toplevel,
+no nested Lisp, no read-time evaluation. Python standard library only.
+
 ## Philosophy of the Port
 
 The objective is not merely to “make it work”, but:

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LGC 1989</title>
+<style>
+  :root { --fondo:#0c120c; --texto:#b8f5b0; --tenue:#6f9a69; --borde:#2c4a2a; --acento:#e8ffb0; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--fondo); color:var(--texto);
+         font:15px/1.45 "IBM Plex Mono","DejaVu Sans Mono",Consolas,monospace; }
+  main { max-width:900px; margin:0 auto; padding:24px 16px 48px; }
+  h1 { font-size:20px; margin:0 0 4px; color:var(--acento); letter-spacing:.04em; }
+  p { margin:6px 0; color:var(--tenue); }
+  a { color:var(--texto); }
+  label { display:block; margin:16px 0 6px; color:var(--acento); }
+  select, input, textarea, button { font:inherit; color:var(--texto); background:#071007;
+         border:1px solid var(--borde); border-radius:4px; padding:8px; }
+  textarea { width:100%; min-height:170px; resize:vertical; }
+  input[type=text] { width:100%; }
+  input[type=number] { width:5em; }
+  .fila { display:flex; flex-wrap:wrap; gap:16px; align-items:center; margin-top:14px; }
+  .fila label { margin:0; color:var(--texto); display:flex; gap:6px; align-items:center; }
+  .ejemplos { margin-top:6px; display:flex; flex-wrap:wrap; gap:6px; }
+  .ejemplos button { padding:3px 8px; font-size:13px; cursor:pointer; color:var(--tenue); }
+  button.principal { margin-top:18px; padding:10px 22px; cursor:pointer; color:var(--fondo);
+         background:var(--texto); border-color:var(--texto); font-weight:bold; }
+  button:disabled { opacity:.5; cursor:wait; }
+  pre { margin-top:18px; padding:14px; min-height:120px; white-space:pre-wrap; word-break:break-word;
+        border:1px solid var(--borde); border-radius:4px; background:#050a05; }
+  pre::before { content:"?- "; color:var(--tenue); }
+  footer { margin-top:28px; font-size:13px; color:var(--tenue); }
+</style>
+</head>
+<body>
+<main>
+  <h1>LGC &mdash; Lenguaje de programaci&oacute;n l&oacute;gica (1989)</h1>
+  <p>Un demostrador por resoluci&oacute;n completo, tesis de grado de 1989, corriendo sin modificar
+     su c&oacute;digo original. Eleg&iacute; una base, escrib&iacute; una meta y consult&aacute;.</p>
+
+  <label for="sel">Base</label>
+  <select id="sel"></select>
+  <textarea id="base" spellcheck="false" aria-label="Formulas de la base"></textarea>
+  <p>Pod&eacute;s editar las f&oacute;rmulas: <code>and or not -&gt; &lt;-&gt; xor</code>,
+     <code>(paratodo (x) ...)</code>, <code>(existe (x) ...)</code>, listas <code>[a b c]</code>.</p>
+
+  <label for="meta">Meta</label>
+  <input id="meta" type="text" spellcheck="false" autocomplete="off">
+  <div class="ejemplos" id="ejemplos"></div>
+
+  <div class="fila">
+    <label>respuestas <input id="resp" type="number" min="1" max="20" value="3"></label>
+    <label>l&iacute;mite de profundidad <input id="lim" type="number" min="0" max="50" value="0"></label>
+    <label><input id="mon" type="checkbox"> traza del monitor</label>
+    <label><input id="anc" type="checkbox"> b&uacute;squeda en anchura</label>
+  </div>
+  <button class="principal" id="ir">Consultar</button>
+  <pre id="salida" aria-live="polite"></pre>
+
+  <footer>l&iacute;mite 0 = sin l&iacute;mite (lo m&aacute;s r&aacute;pido cuando hay prueba).
+    Cada consulta tiene un tope de 20&nbsp;s. C&oacute;digo y documentaci&oacute;n de la tesis:
+    <a href="https://github.com/dsilberschmidt/TesisLisp">github.com/dsilberschmidt/TesisLisp</a></footer>
+</main>
+<script>
+const EJEMPLOS = {
+  dama1:["(hay habitacion1 dama)","(hay habitacion2 dama)","(hay habitacion1 tigre)"],
+  dama2:["(hay habitacion1 tigre)","(hay habitacion2 dama)"], dama3:["(hay habitacion1 dama)","(hay habitacion2 dama)"],
+  dama4:["(hay habitacion1 tigre)","(hay habitacion2 dama)"], dama5:["(hay habitacion1 dama)","(l1)","(l2)"],
+  dama6:["(hay habitacion1 tigre)","(hay habitacion2 dama)"], dama7:["(hay habitacion1 dama)","(hay habitacion2 tigre)"],
+  presidente1:["(presidente alfonsin)","(presidente ?x)"], presidente2:["(presidente alfonsin)","(presidente ?x)"],
+  transil1:["(dice pepe)","(pepe es humano loco)"], transil2:["(pepe es humano)","(pepe esta loco)"],
+  app:["(append ?x ?y [a b])","(append [a] [b c] ?z)"], pert:["(?x pert [a b c])","(b pert [a b c])"],
+  rev:["(reverse [a b c] ?r)","(reverse [a b] ?r)"],
+  propia:["(mortal ?quien)"]
+};
+const PROPIA = "(  (paratodo (x) ((humano x) -> (mortal x)))\n   (humano socrates)\n)";
+const $ = id => document.getElementById(id);
+let bases = [];
+
+function elegir(nombre) {
+  const b = bases.find(x => x.nombre === nombre);
+  $("base").value = b ? b.texto : PROPIA;
+  const ej = EJEMPLOS[nombre] || [];
+  $("meta").value = ej[0] || "";
+  $("ejemplos").replaceChildren(...ej.map(t => {
+    const bt = document.createElement("button"); bt.type = "button"; bt.textContent = t;
+    bt.onclick = () => { $("meta").value = t; }; return bt;
+  }));
+}
+
+async function consultar() {
+  $("ir").disabled = true; $("salida").textContent = "pensando...";
+  try {
+    const r = await fetch("/consulta", { method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ base:$("base").value, meta:$("meta").value,
+        respuestas:+$("resp").value || 1, limite:+$("lim").value || 0,
+        monitor:$("mon").checked, anchura:$("anc").checked }) });
+    const d = await r.json();
+    $("salida").textContent = d.salida ?? ("error: " + d.error);
+  } catch (e) { $("salida").textContent = "error de conexion: " + e; }
+  $("ir").disabled = false;
+}
+
+fetch("/bases").then(r => r.json()).then(bs => {
+  bases = bs;
+  const opciones = bs.map(b => new Option(b.nombre, b.nombre));
+  opciones.push(new Option("propia (escribila)", "propia"));
+  $("sel").replaceChildren(...opciones);
+  $("sel").onchange = e => elegir(e.target.value);
+  elegir("dama1"); $("sel").value = "dama1";
+});
+$("ir").onclick = consultar;
+$("meta").addEventListener("keydown", e => { if (e.key === "Enter") consultar(); });
+</script>
+</body>
+</html>
